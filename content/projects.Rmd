@@ -1,0 +1,76 @@
+---
+title: "Projects"
+author: "Rami Krispin"
+date: "2019-11-30"
+output: blogdown::html_page 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+Here is a list of the main R packages I am currently working on:
+
+
+# TSstudio <a href='https://ramikrispin.github.io/TSstudio/'><img src="/images/TSstudio logo.png" align="right"  /></a>
+
+The [TSstudio](https://ramikrispin.github.io/TSstudio) package provides a set of tools descriptive and predictive analysis of time series data. That includes utility functions for preprocessing time series data,  interactive visualization functions based on the [plotly](https://CRAN.R-project.org/package=plotly) package engine, and set of tools for training and evaluating time series forecasting models from the [forecast](https://CRAN.R-project.org/package=forecast), [forecastHybrid](https://CRAN.R-project.org/package=forecastHybrid), and [bsts](https://CRAN.R-project.org/package=bsts) packages.
+
+
+```{r}
+library(TSstudio)
+data(USgas)
+ts_seasonal(USgas, type = "all")
+```
+
+
+
+
+More information available on the package [vignettes](https://ramikrispin.github.io/TSstudio/articles/).
+
+# UKgrid
+
+The UKgrid dataset is an example of a multiple seasonality time series. This time series captures the demand for electricity and its components in the UK since April 2005 using half-hour intervals. In addition, the package provides a function to extract, subset and aggregate the series into `tsibble`, `ts`, `xts`, `zoo`, `data.frame`, `data.table`, or `tbl`. 
+
+The data was sourced from the National Grid UK [website](https://www.nationalgrid.com/uk)
+
+```{r}
+library(TSstudio)
+library(UKgrid)
+nd_hourly <- UKgrid::extract_grid(type = "tsibble", 
+                          columns = "ND",
+                          aggregate = "Hourly")
+
+
+ts_plot(ts.obj = nd_hourly, 
+        title = "UK National Demand - Hourly")
+```
+
+
+# USgrid
+
+The **USgrid** R package provides a set of high frequency (hourly) time-series datasets, describing the demand and generation of electricity in the US (lower-48 states, excluding Alaska and Hawaii). That includes the following series:
+
+* `US_elec`  - the total hourly demand and supply (generation) for electricity in the US since July 2015
+
+* `US_source` - the US net generation of electricity by energy source (natural gas, coal, solar, etc.) since July 2018
+
+* `Cal_elec` - The California subregion hourly demand by operator since July 2018
+
+All datasets are in [tsibble](https://tsibble.tidyverts.org/index.html) format
+
+```{r fig.width=9}
+library(USgrid)
+library(plotly)
+
+plot_ly(data = US_source,
+        x = ~ date_time,
+        y = ~ series,
+        color = ~ source,
+        type = "scatter",
+        mode = "lines") %>%
+  layout(title = "US Electricity Generation by Energy Source",
+         yaxis = list(title = "Mwh"),
+         xaxis = list(title = "Source: US Energy Information Administration (Nov 2019)"))
+```
+
