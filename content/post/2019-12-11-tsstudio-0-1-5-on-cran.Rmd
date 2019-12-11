@@ -1,0 +1,31 @@
+---
+title: TSstudio 0.1.5 on CRAN
+author: Rami Krispin
+date: '2019-12-11'
+slug: tsstudio-0-1-5-on-cran
+categories: ["TSstudio"]
+tags: ["TSstudio", "R", "forecast", "timeseries"]
+keywords:
+  - tech
+---
+
+```{r setup, include=FALSE}
+`%>%` <- magrittr::`%>%`
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE, fig.width=8, fig.height=5)
+```
+
+A new version (0.1.5) of the [TSstudio](https://ramikrispin.github.io/TSstudio/index.html) package was pushed to [CRAN](https://cran.r-project.org/web/packages/TSstudio/index.html) last month. The release includes new functions as well as bug fixing, and update of the package license (modified from GPL-3 to MIT).
+
+### New features
+
+* `train_model` - a flexible framework for training, testing, evaluating, and forecasting models. This function provides the ability to run multiple models with backtesting or single training/testing partitions. This function will replace the `ts_backtesting` function which will deprecated in the next release.
+
+* `plot_model` - animation the performance of the `train_model` output on the backtesting partitions
+* `plot_error` - plotting the error distribution of the `train_model` output
+* `ts_cor` - for ACF and PACF plots with seasonal lags, this function will replace the ts_acf and ts_pacf functions that will deprecated in the next release.
+* `arima_diag` - a diagnostic plot for identify the AR, MA and differencing components of the ARIMA model
+
+### Fix errors
+
+* `ts_seasonal` - aligning the box plot color
+* `ts_plot` - setting the dash and marker mode for multiple time series
