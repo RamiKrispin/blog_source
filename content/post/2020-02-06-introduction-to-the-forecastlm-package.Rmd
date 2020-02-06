@@ -1,0 +1,231 @@
+---
+title: Introduction to the forecastLM package
+author: Rami Krispin
+date: '2020-02-06'
+slug: introduction-to-the-forecastlm-package
+categories: []
+tags: ["forecastLM", "R", "forecast", "timeseries", "trainLM"]
+keywords:
+  - forecast
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width=8)
+```
+
+
+I am pleased to announce a new R package - [forecastLM](https://github.com/RamiKrispin/forecastLM). The package, as the name implies, provides applications for forecasting regular time series data with a linear regression model (based on the `lm` function from the **stats** package). It supports both `ts` and `tsibble` objects as inputs and enables simple extractions of features from the input object on the fly. Example for such features:
+
+* Single or Multiple seasonal components (when applicable)
+* Different types of trends (regular, log, exponential, polynomial)
+* Adding past lags
+* Piecewise regression 
+* Variables selection with stepwise regression
+* Handle events and outliers
+
+In addition, it provides interactive data visualization tools utilizing the [plotly](https://plot.ly/r/) package. More details about the package available here:
+
+* Github page: https://github.com/RamiKrispin/forecastLM
+* Package site (work on progress): https://ramikrispin.github.io/forecastLM/
+* Issues: https://github.com/RamiKrispin/forecastLM/issues
+
+
+### Installation
+
+The package is still under development and currently available for installation through package Github repo:
+
+```{r eval = FALSE}
+# install.packages("remotes")
+remotes::install_github("RamiKrispin/forecastLM")
+```
+
+### Forecasting the residential demand for natural gas in New York
+
+In the example below, we will use the [trainLM](https://ramikrispin.github.io/forecastLM/reference/trainLM.html) function to train a linear regression model to forecast the residential demand for natural gas in New York state. As the goal is to demonstrate the key functions of the package, we will skip the descriptive analysis process (which generally you shouldn't!) and focus on the training the forecasting process.
+
+The demand for natural gas in New York state is one of the datasets available on the package and was sourced from the [US Energy Information Administration](https://www.eia.gov/) API. Let's load the series and review its main characteristics:
+
+
+```{r }
+library(forecastLM)
+
+data("ny_gas")
+
+class(ny_gas)
+
+head(ny_gas)
+```
+
+
+The `ny_gas` series is a regular time-series with monthly frequency in a `tsibble` format. We will use the `ts_plot` function from the [TSstudio](https://ramikrispin.github.io/TSstudio/) package to plot the series:
+
+
+```{r}
+library(TSstudio)
+
+ts_plot(ny_gas,
+        title = "The New York Natural Gas Residential Monthly Consumption",
+        Ytitle = "Million Cubic Feet",
+        Xtitle = "Source: US Energy Information Administration (Jan 2020)")
+```
+
+
+As can see in the plot above, the series has strong seasonality. Although it is not pronounced well in the plot, for simplicity, we will assume that the series has linear growth.
+
+### Basic forecasting model
+
+We will start with a simplistic model, fitting a linear trend and monthly seasonality with the `trend` and `seasonal` arguments, respectivly:
+
+```{r}
+md1 <- trainLM(input = ny_gas, 
+               y = "y",
+               trend = list(linear = TRUE),
+               seasonal = "month")
+```
+
+The `trainLM` function return a list with 5 objects:
+
+* `model` - the `lm` model output
+* `fitted` - the fitted values
+* `residuals` - the residuals (i.e., actuals - fitted)
+* `parameters` - the model parameters
+* `series` - the intput series with the features that build to fit the model
+
+
+```{r}
+summary(md1)
+```
+
+
+You can use the `summary` function to view the model summary:
+
+```{r}
+summary(md1$model)
+```
+
+The `plot_res` function provides a residuals plot. Besides the standard residual plot (e.g., residuals, residauls correlation and normality) it provides on the top of the plot a comparson view of the fitted values against the series itself. This is where the power of interactivity come into action as it enables to:
+
+* Quickly identify outliers or observations that the model did not fit well, and linked to the event in the series itself
+* As the residuals and the fitted vs. actuals plots are both linked, when zoom-in on one, it will automatically will zoom-in on the corresponding observations on the second plot (try it!)
+
+
+```{r}
+plot_res(md1)
+```
+
+
+### Adding lags regressors
+
+As can see in the ACF plot on the residual plot above, the residuals are correlated. This mainly implies that some patterns left on the data which the model did not capture. One way to capture those patterns is by regress the series with its past lags. This is generally equivalent to an AR (Autoregressive) process. The `lags` argument enables you to add lags regressor by defining the lags number. For example, let’s add to the model the first and seasonal lags by setting the lags argument to `c(1, 12)`:
+
+```{r}
+md2 <- trainLM(input = ny_gas, 
+               y = "y",
+               trend = list(linear = TRUE),
+               seasonal = "month",
+               lags = c(1,12))
+```
+
+```{r}
+summary(md2$model)
+```
+
+You can see on the summary of the model above that two additional variables were added by the `trainLM` function - `lag_1` and `lag_12`, corresponding to the first and seasonal lags of the series. Those new features added to the input series and available on the output of the trained model:
+
+
+```{r}
+head(md2$series, 13)
+```
+
+In this case, as can notice in the residuals plot below, the lag variables helped in reducing the correlation of the residuals.
+
+```{r}
+plot_res(md2)
+```
+
+**Note:** When forecasting the feature values of the series with the [forecastLM]((https://ramikrispin.github.io/forecastLM/reference/forecastLM.html)) function (see example below), for lag n the function will automatically map the last n observations for the corresponding first n observations. If the forecast horizon is greater than n observations, it will utilize the corresponding predicted values from observation n+1 and moving forward. 
+
+
+### Variables selection with stepwise regression
+
+The `step` argument enables you to apply a stepwise regression method for variable selection based on the [AIC](https://en.wikipedia.org/wiki/Akaike_information_criterion) (Akaike Information Criterion). For example, let's add some noise by adding the 6th lag, in addition to the 1st and 12th lags:
+
+```{r}
+md3 <- trainLM(input = ny_gas, 
+               y = "y",
+               trend = list(linear = TRUE),
+               seasonal = "month",
+               lags = c(1, 6, 12),
+               step = TRUE)
+```
+
+```{r}
+summary(md3$model)
+```
+
+As expected, the stepwise regression dropped the 6th lag variable.
+
+### Handling special events and outliers
+
+
+The `events` argument allows you to handle special events (e.g., non-seasonal) and outliers. This argument takes a list of input (or inputs), each represents a set of date or time that corresponding to the series index. It than transform those inputs to flag variables with the use of a hot-encoding method.
+For instance, you can observe from the series plot above that the peaks during the years 2015, 2018, and 2019 were higher than the usual. Potentially, This could be related to unusual weather patterns such as colder temperatures than the average. You can observe on the above-trained models’ residuals plots that the residuals during those peaks were significantly higher due to a bad fit of the model. Let’s flag those events with the `events` argument:
+
+
+
+```{r}
+events1 <- list(outlier = c(as.Date("2015-01-01"), as.Date("2015-02-01"), as.Date("2018-01-01"), as.Date("2019-01-01")))
+```
+
+
+
+```{r}
+md4 <- trainLM(input = ny_gas, 
+               y = "y",
+               trend = list(linear = TRUE),
+               seasonal = "month",
+               lags = c(1, 12),
+               events = events1,
+               step = TRUE)
+```
+
+```{r}
+summary(md4$model)
+```
+
+The `outlier` variable created and added to the regression by the function. You can notice in the residuals plot below the effect of the variable on the fit of the model:
+
+```{r}
+plot_res(md4)
+```
+
+
+### Forecasting
+
+Once the model is trained, forecasting the future observations of the series is strigthforward with the forecastLM function. The forecastLM function is fairly similar to the forecast function from the forecast package and it has the following arguments:
+
+* `model` - an `trainLM` object
+* `newdata` - a `tsibble` object with the future values of the external regressors (is used as an input for to train the model)
+* `h` - the horizon of the forecast
+* `pi` - the level of the prediction intervals, by default will calculate the 80% and 95% prediction intervals 
+
+```{r}
+fc4 <- forecastLM(md4, h = 60)
+```
+
+The `plot_fc` function returns a visualization of the forecasted object:
+
+```{r}
+plot_fc(fc4)
+```
+
+The `plot_fc` has six customized color themes. By default, the function will use the `normal` theme (as the plot above), which is similar to the **base** R `plot` function color theme (prediction intervals with shaded gray colors). In addition to the `normal` theme, there are `classic`, `darkBlue`, `darkPink`, `darkGreen`, and `lightBeige` themes. For example, we will change the theme to `darkPink` with the `theme` argument:
+
+```{r}
+plot_fc(fc4, theme = "darkPink")
+```
+
+
+Last but not leaset, the package is on an early [experimental](https://www.tidyverse.org/lifecycle/#experimental) lifecycle, and some issues may occur while using. If you identify any issue, please submit it over here:
+https://github.com/RamiKrispin/forecastLM/issues
+
