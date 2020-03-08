@@ -5,11 +5,34 @@
  5    <description>Recent content on Rami Krispin</description>
  6    <generator>Hugo -- gohugo.io</generator>
  7    <language>en-us</language>
-11    <lastBuildDate>Thu, 06 Feb 2020 00:00:00 +0000</lastBuildDate>
+11    <lastBuildDate>Sat, 30 Nov 2019 00:00:00 +0000</lastBuildDate>
 12    
 13        <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
 14    
 15    
+16    <item>
+17      <title>Introduction to the coronavirus package</title>
+18      <link>/2020/03/introduction-to-the-coronavirus-package/</link>
+19      <pubDate>Sun, 08 Mar 2020 00:00:00 +0000</pubDate>
+20      
+21      <guid>/2020/03/introduction-to-the-coronavirus-package/</guid>
+22      <description>
+
+
+&lt;p&gt;The &lt;a href=&#34;https://ramikrispin.github.io/coronavirus/&#34;&gt;coronavirus&lt;/a&gt; R dataset package provides a daily summary for the Coronavirus new cases by geographic location (i.e., country and province/state when applicable), and case type (confirmed, recovered, and death).&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;coronavirus&lt;/code&gt; dataset contains the following fields:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;date&lt;/code&gt; - The date of the summary&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Province.State&lt;/code&gt; - The province or state, when applicable&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Country.Region&lt;/code&gt; - The country or region name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Lat&lt;/code&gt; - Latitude point&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Long&lt;/code&gt;- Longitude point&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;cases&lt;/code&gt; - the number of daily cases (corresponding to the case type)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;type&lt;/code&gt; - the type of case (i.e., confirmed, death, and recovered)&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+23    </item>
+24    
 16    <item>
 17      <title>Introduction to the forecastLM package</title>
 18      <link>/2020/02/introduction-to-the-forecastlm-package/</link>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>covid19 on Rami Krispin</title>
+    <link>/tags/covid19/</link>
+    <description>Recent content in covid19 on Rami Krispin</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 08 Mar 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/covid19/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Introduction to the coronavirus package</title>
+      <link>/2020/03/introduction-to-the-coronavirus-package/</link>
+      <pubDate>Sun, 08 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/03/introduction-to-the-coronavirus-package/</guid>
+      <description>The coronavirus R dataset package provides a daily summary for the Coronavirus new cases by geographic location (i.e., country and province/state when applicable), and case type (confirmed, recovered, and death).
+The coronavirus dataset contains the following fields:
+ date - The date of the summary Province.State - The province or state, when applicable Country.Region - The country or region name Lat - Latitude point Long- Longitude point cases - the number of daily cases (corresponding to the case type) type - the type of case (i.</description>
+    </item>
+    
+  </channel>
+</rss>
