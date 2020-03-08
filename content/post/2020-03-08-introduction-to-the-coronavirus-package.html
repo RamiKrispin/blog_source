@@ -11,7 +11,8 @@ keywords:
 
 
 
-<p>The <a href="https://ramikrispin.github.io/coronavirus/">coronavirus</a> R dataset package provides a daily summary for the Coronavirus new cases by geographic location (i.e., country and province/state when applicable), and case type (confirmed, recovered, and death).</p>
+<p>The <a href="https://ramikrispin.github.io/coronavirus/">coronavirus</a> R dataset package provides a daily summary for the Coronavirus new cases by geographic location (i.e., country and province/state when applicable), and case type (confirmed, recovered, and death). The raw data pulled from the Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus <a href="https://github.com/CSSEGISandData/COVID-19">repository</a>.</p>
+<p><strong>Note:</strong> More granular data for the main countries affected by the virus (South Korea, Italy, Iran, etc.) will add to the package in the coming days.</p>
 <p>The <code>coronavirus</code> dataset contains the following fields:</p>
 <ul>
 <li><code>date</code> - The date of the summary</li>
@@ -22,3 +23,12 @@ keywords:
 <li><code>cases</code> - the number of daily cases (corresponding to the case type)</li>
 <li><code>type</code> - the type of case (i.e., confirmed, death, and recovered)</li>
 </ul>
+<div id="installation" class="section level3">
+<h3>Installation</h3>
+<p>You can install the CRAN version (v0.1.0):</p>
+<pre class="r"><code>install.packages(&quot;coronavirus&quot;)</code></pre>
+<p>Or, install the Github version (v.0.1.0.9000):</p>
+<pre class="r"><code># install.packages(&quot;devtools&quot;)
+devtools::install_github(&quot;RamiKrispin/coronavirus&quot;)</code></pre>
+<p>The CRAN version (v0.1.0) is update up to Feb 16, 2020, where the Github version (v.0.1.0.9000) is update on a daily bases.</p>
+</div>

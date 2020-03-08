@@ -19,7 +19,8 @@
 22      <description>
 
 
-&lt;p&gt;The &lt;a href=&#34;https://ramikrispin.github.io/coronavirus/&#34;&gt;coronavirus&lt;/a&gt; R dataset package provides a daily summary for the Coronavirus new cases by geographic location (i.e., country and province/state when applicable), and case type (confirmed, recovered, and death).&lt;/p&gt;
+&lt;p&gt;The &lt;a href=&#34;https://ramikrispin.github.io/coronavirus/&#34;&gt;coronavirus&lt;/a&gt; R dataset package provides a daily summary for the Coronavirus new cases by geographic location (i.e., country and province/state when applicable), and case type (confirmed, recovered, and death). The raw data pulled from the Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus &lt;a href=&#34;https://github.com/CSSEGISandData/COVID-19&#34;&gt;repository&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; More granular data for the main countries affected by the virus (South Korea, Italy, Iran, etc.) will add to the package in the coming days.&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;coronavirus&lt;/code&gt; dataset contains the following fields:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;date&lt;/code&gt; - The date of the summary&lt;/li&gt;
@@ -30,6 +31,15 @@
 &lt;li&gt;&lt;code&gt;cases&lt;/code&gt; - the number of daily cases (corresponding to the case type)&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;type&lt;/code&gt; - the type of case (i.e., confirmed, death, and recovered)&lt;/li&gt;
 &lt;/ul&gt;
+&lt;div id=&#34;installation&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Installation&lt;/h3&gt;
+&lt;p&gt;You can install the CRAN version (v0.1.0):&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;install.packages(&amp;quot;coronavirus&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Or, install the Github version (v.0.1.0.9000):&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# install.packages(&amp;quot;devtools&amp;quot;)
+devtools::install_github(&amp;quot;RamiKrispin/coronavirus&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The CRAN version (v0.1.0) is update up to Feb 16, 2020, where the Github version (v.0.1.0.9000) is update on a daily bases.&lt;/p&gt;
+&lt;/div&gt;
 </description>
 23    </item>
 24    

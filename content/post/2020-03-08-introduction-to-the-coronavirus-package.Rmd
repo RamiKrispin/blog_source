@@ -14,7 +14,9 @@ knitr::opts_chunk$set(echo = TRUE, fig.width=8)
 ```
 
 
-The [coronavirus](https://ramikrispin.github.io/coronavirus/) R dataset package provides a daily summary for the Coronavirus new cases by geographic location (i.e., country and province/state when applicable), and case type (confirmed, recovered, and death).
+The [coronavirus](https://ramikrispin.github.io/coronavirus/) R dataset package provides a daily summary for the Coronavirus new cases by geographic location (i.e., country and province/state when applicable), and case type (confirmed, recovered, and death). The raw data pulled from the Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus [repository](https://github.com/CSSEGISandData/COVID-19).
+
+**Note:** More granular data for the main countries affected by the virus (South Korea, Italy, Iran, etc.) will add to the package in the coming days.
 
 The `coronavirus` dataset contains the following fields:
 
@@ -25,4 +27,22 @@ The `coronavirus` dataset contains the following fields:
 * `Long`- Longitude point
 * `cases` - the number of daily cases (corresponding to the case type)
 * `type` - the type of case (i.e., confirmed, death, and recovered)
+
+
+### Installation
+
+You can install the CRAN version (v0.1.0):
+
+``` r
+install.packages("coronavirus")
+```
+
+Or, install the Github version (v.0.1.0.9000):
+
+``` r
+# install.packages("devtools")
+devtools::install_github("RamiKrispin/coronavirus")
+```
+
+The CRAN version (v0.1.0) is update up to Feb 16, 2020, where the Github version (v.0.1.0.9000) is update on a daily bases.
 
