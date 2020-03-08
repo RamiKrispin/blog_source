@@ -99,5 +99,8 @@ country_view %>% head(20)
 
 #### Recovery and mortality rates
 
-Using the above cases summary by country, we can derive the recovery and mortality rates, where:
+Using the above country level summary, we can derive the recovery and mortality rates, where:
+
+$$ Recovery ~rate = \frac{Total~ Recovered ~Cases} {Total ~Confirmed ~Cases}, and$$
+$$ Mortality ~rate = \frac{Total~ Death ~Cases} {Total ~Confirmed ~Cases}$$
 

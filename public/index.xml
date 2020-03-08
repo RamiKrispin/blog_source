@@ -117,7 +117,9 @@ country_view %&amp;gt;% head(20)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;recovery-and-mortality-rates&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Recovery and mortality rates&lt;/h4&gt;
-&lt;p&gt;Using the above cases summary by country, we can derive the recovery and mortality rates, where:&lt;/p&gt;
+&lt;p&gt;Using the above country level summary, we can derive the recovery and mortality rates, where:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ Recovery ~rate = \frac{Total~ Recovered ~Cases} {Total ~Confirmed ~Cases}, and\]&lt;/span&gt;
+&lt;span class=&#34;math display&#34;&gt;\[ Mortality ~rate = \frac{Total~ Death ~Cases} {Total ~Confirmed ~Cases}\]&lt;/span&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>
@@ -471,6 +473,652 @@ For instance, you can observe from the series plot above that the peaks during t
 &lt;p&gt;Last but not leaset, the package is on an early &lt;a href=&#34;https://www.tidyverse.org/lifecycle/#experimental&#34;&gt;experimental&lt;/a&gt; lifecycle, and some issues may occur while using. If you identify any issue, please submit it over here:
 &lt;a href=&#34;https://github.com/RamiKrispin/forecastLM/issues&#34; class=&#34;uri&#34;&gt;https://github.com/RamiKrispin/forecastLM/issues&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
+</description>
+23    </item>
+24    
+16    <item>
+17      <title>Introduction to the forecastLM package</title>
+18      <link>/2020/02/introduction-to-the-forecastlm-package/</link>
+19      <pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate>
+20      
+21      <guid>/2020/02/introduction-to-the-forecastlm-package/</guid>
+22      <description>&lt;p&gt;I am pleased to announce a new R package - &lt;a href=&#34;https://github.com/RamiKrispin/forecastLM&#34;&gt;forecastLM&lt;/a&gt;. The package, as the name implies, provides applications for forecasting regular time series data with a linear regression model (based on the &lt;code&gt;lm&lt;/code&gt; function from the &lt;strong&gt;stats&lt;/strong&gt; package). It supports both &lt;code&gt;ts&lt;/code&gt; and &lt;code&gt;tsibble&lt;/code&gt; objects as inputs and enables simple extractions of features from the input object on the fly. Example for such features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Single or Multiple seasonal components (when applicable)&lt;/li&gt;
+&lt;li&gt;Different types of trends (regular, log, exponential, polynomial)&lt;/li&gt;
+&lt;li&gt;Adding past lags&lt;/li&gt;
+&lt;li&gt;Piecewise regression&lt;/li&gt;
+&lt;li&gt;Variables selection with stepwise regression&lt;/li&gt;
+&lt;li&gt;Handle events and outliers&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In addition, it provides interactive data visualization tools utilizing the &lt;a href=&#34;https://plot.ly/r/&#34;&gt;plotly&lt;/a&gt; package. More details about the package available here:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Github page: &lt;a href=&#34;https://github.com/RamiKrispin/forecastLM&#34;&gt;https://github.com/RamiKrispin/forecastLM&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Package site (work on progress): &lt;a href=&#34;https://ramikrispin.github.io/forecastLM/&#34;&gt;https://ramikrispin.github.io/forecastLM/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Issues: &lt;a href=&#34;https://github.com/RamiKrispin/forecastLM/issues&#34;&gt;https://github.com/RamiKrispin/forecastLM/issues&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;installation&#34;&gt;Installation&lt;/h3&gt;
+&lt;p&gt;The package is still under development and currently available for installation through package Github repo:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# install.packages(&amp;#34;remotes&amp;#34;)&lt;/span&gt;
+remotes&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;install_github&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;RamiKrispin/forecastLM&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;forecasting-the-residential-demand-for-natural-gas-in-new-york&#34;&gt;Forecasting the residential demand for natural gas in New York&lt;/h3&gt;
+&lt;p&gt;In the example below, we will use the &lt;a href=&#34;https://ramikrispin.github.io/forecastLM/reference/trainLM.html&#34;&gt;trainLM&lt;/a&gt; function to train a linear regression model to forecast the residential demand for natural gas in New York state. As the goal is to demonstrate the key functions of the package, we will skip the descriptive analysis process (which generally you shouldn&amp;rsquo;t!) and focus on the training the forecasting process.&lt;/p&gt;
+&lt;p&gt;The demand for natural gas in New York state is one of the datasets available on the package and was sourced from the &lt;a href=&#34;https://www.eia.gov/&#34;&gt;US Energy Information Administration&lt;/a&gt; API. Let&amp;rsquo;s load the series and review its main characteristics:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(forecastLM)
+
+&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ny_gas&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;(ny_gas)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;tbl_ts&amp;quot;     &amp;quot;tbl_df&amp;quot;     &amp;quot;tbl&amp;quot;        &amp;quot;data.frame&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;head&lt;/span&gt;(ny_gas)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##         date     y
+## 1 1997-01-01 62019
+## 2 1997-02-01 56003
+## 3 1997-03-01 51213
+## 4 1997-04-01 37597
+## 5 1997-05-01 24082
+## 6 1997-06-01 14469
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;ny_gas&lt;/code&gt; series is a regular time-series with monthly frequency in a &lt;code&gt;tsibble&lt;/code&gt; format. We will use the &lt;code&gt;ts_plot&lt;/code&gt; function from the &lt;a href=&#34;https://ramikrispin.github.io/TSstudio/&#34;&gt;TSstudio&lt;/a&gt; package to plot the series:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(TSstudio)
+
+&lt;span style=&#34;color:#a6e22e&#34;&gt;ts_plot&lt;/span&gt;(ny_gas,
+        title &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;The New York Natural Gas Residential Monthly Consumption&amp;#34;&lt;/span&gt;,
+        Ytitle &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Million Cubic Feet&amp;#34;&lt;/span&gt;,
+        Xtitle &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Source: US Energy Information Administration (Jan 2020)&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;As can see in the plot above, the series has strong seasonality. Although it is not pronounced well in the plot, for simplicity, we will assume that the series has linear growth.&lt;/p&gt;
+&lt;h3 id=&#34;basic-forecasting-model&#34;&gt;Basic forecasting model&lt;/h3&gt;
+&lt;p&gt;We will start with a simplistic model, fitting a linear trend and monthly seasonality with the &lt;code&gt;trend&lt;/code&gt; and &lt;code&gt;seasonal&lt;/code&gt; arguments, respectivly:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;md1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;trainLM&lt;/span&gt;(input &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ny_gas, 
+               y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;y&amp;#34;&lt;/span&gt;,
+               trend &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(linear &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;),
+               seasonal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;month&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;trainLM&lt;/code&gt; function return a list with 5 objects:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;model&lt;/code&gt; - the &lt;code&gt;lm&lt;/code&gt; model output&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fitted&lt;/code&gt; - the fitted values&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;residuals&lt;/code&gt; - the residuals (i.e., actuals - fitted)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;parameters&lt;/code&gt; - the model parameters&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;series&lt;/code&gt; - the intput series with the features that build to fit the model&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;summary&lt;/span&gt;(md1)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##            Length Class      Mode
+## model      13     lm         list
+## fitted      2     data.frame list
+## residuals   2     tbl_ts     list
+## parameters 13     -none-     list
+## series      4     tbl_ts     list
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can use the &lt;code&gt;summary&lt;/code&gt; function to view the model summary:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;summary&lt;/span&gt;(md1&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;model)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## stats::lm(formula = f, data = df1)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -21026.5  -2741.6   -412.8   2853.0  23582.2 
+## 
+## Coefficients:
+##                Estimate Std. Error  t value              Pr(&amp;gt;|t|)    
+## (Intercept)   66720.017   1340.437  49.7748 &amp;lt; 0.00000000000000022 ***
+## monthFeb      -5094.059   1704.010  -2.9895              0.003061 ** 
+## monthMar     -12667.248   1704.027  -7.4337  0.000000000001514748 ***
+## monthApr     -34179.741   1704.056 -20.0579 &amp;lt; 0.00000000000000022 ***
+## monthMay     -49716.104   1704.096 -29.1745 &amp;lt; 0.00000000000000022 ***
+## monthJun     -57592.685   1704.148 -33.7956 &amp;lt; 0.00000000000000022 ***
+## monthJul     -60314.048   1704.211 -35.3912 &amp;lt; 0.00000000000000022 ***
+## monthAug     -61100.585   1704.285 -35.8512 &amp;lt; 0.00000000000000022 ***
+## monthSep     -60509.165   1704.371 -35.5023 &amp;lt; 0.00000000000000022 ***
+## monthOct     -53000.442   1704.468 -31.0950 &amp;lt; 0.00000000000000022 ***
+## monthNov     -34896.516   1723.350 -20.2492 &amp;lt; 0.00000000000000022 ***
+## monthDec     -14487.892   1723.401  -8.4066  0.000000000000002769 ***
+## linear_trend     27.059      4.416   6.1274  0.000000003276170518 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 5778.6 on 261 degrees of freedom
+## Multiple R-squared:  0.94076,	Adjusted R-squared:  0.93804 
+## F-statistic: 345.41 on 12 and 261 DF,  p-value: &amp;lt; 0.000000000000000222
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;plot_res&lt;/code&gt; function provides a residuals plot. Besides the standard residual plot (e.g., residuals, residauls correlation and normality) it provides on the top of the plot a comparson view of the fitted values against the series itself. This is where the power of interactivity come into action as it enables to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Quickly identify outliers or observations that the model did not fit well, and linked to the event in the series itself&lt;/li&gt;
+&lt;li&gt;As the residuals and the fitted vs. actuals plots are both linked, when zoom-in on one, it will automatically will zoom-in on the corresponding observations on the second plot (try it!)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot_res&lt;/span&gt;(md1)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;h3 id=&#34;adding-lags-regressors&#34;&gt;Adding lags regressors&lt;/h3&gt;
+&lt;p&gt;As can see in the ACF plot on the residual plot above, the residuals are correlated. This mainly implies that some patterns left on the data which the model did not capture. One way to capture those patterns is by regress the series with its past lags. This is generally equivalent to an AR (Autoregressive) process. The &lt;code&gt;lags&lt;/code&gt; argument enables you to add lags regressor by defining the lags number. For example, let’s add to the model the first and seasonal lags by setting the lags argument to &lt;code&gt;c(1, 12)&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;md2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;trainLM&lt;/span&gt;(input &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ny_gas, 
+               y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;y&amp;#34;&lt;/span&gt;,
+               trend &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(linear &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;),
+               seasonal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;month&amp;#34;&lt;/span&gt;,
+               lags &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt;))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;summary&lt;/span&gt;(md2&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;model)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## stats::lm(formula = f, data = df1)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -16244.65  -1722.06   -127.02   1737.53  15241.24 
+## 
+## Coefficients:
+##                   Estimate    Std. Error  t value              Pr(&amp;gt;|t|)    
+## (Intercept)   32265.964782   4365.570790   7.3910   0.00000000000224972 ***
+## monthFeb     -12055.401516   1722.177908  -7.0001   0.00000000002402279 ***
+## monthMar     -16236.106785   1758.014778  -9.2355 &amp;lt; 0.00000000000000022 ***
+## monthApr     -31687.887252   2407.133951 -13.1642 &amp;lt; 0.00000000000000022 ***
+## monthMay     -34236.087062   3128.014939 -10.9450 &amp;lt; 0.00000000000000022 ***
+## monthJun     -33093.376259   3698.769808  -8.9471 &amp;lt; 0.00000000000000022 ***
+## monthJul     -31397.220717   3977.363059  -7.8940   0.00000000000009549 ***
+## monthAug     -30800.918841   4071.729734  -7.5646   0.00000000000076668 ***
+## monthSep     -29800.859834   4068.696270  -7.3244   0.00000000000338633 ***
+## monthOct     -23509.033810   3764.733548  -6.2445   0.00000000184222790 ***
+## monthNov     -11343.231562   2975.266737  -3.8125             0.0001738 ***
+## monthDec      -2268.087593   1939.589740  -1.1694             0.2433840    
+## linear_trend     10.714705      4.418472   2.4250             0.0160272 *  
+## lag_1             0.513078      0.054328   9.4441 &amp;lt; 0.00000000000000022 ***
+## lag_12            0.118482      0.056521   2.0962             0.0370788 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4895.8 on 247 degrees of freedom
+## Multiple R-squared:  0.95857,	Adjusted R-squared:  0.95622 
+## F-statistic: 408.16 on 14 and 247 DF,  p-value: &amp;lt; 0.000000000000000222
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can see on the summary of the model above that two additional variables were added by the &lt;code&gt;trainLM&lt;/code&gt; function - &lt;code&gt;lag_1&lt;/code&gt; and &lt;code&gt;lag_12&lt;/code&gt;, corresponding to the first and seasonal lags of the series. Those new features added to the input series and available on the output of the trained model:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;head&lt;/span&gt;(md2&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;series, &lt;span style=&#34;color:#ae81ff&#34;&gt;13&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## # A tsibble: 13 x 6 [1M]
+##        date     y month linear_trend lag_1 lag_12
+##       &amp;lt;mth&amp;gt; &amp;lt;int&amp;gt; &amp;lt;fct&amp;gt;        &amp;lt;int&amp;gt; &amp;lt;int&amp;gt;  &amp;lt;int&amp;gt;
+##  1 1997 Jan 62019 Jan              1    NA     NA
+##  2 1997 Feb 56003 Feb              2 62019     NA
+##  3 1997 Mar 51213 Mar              3 56003     NA
+##  4 1997 Apr 37597 Apr              4 51213     NA
+##  5 1997 May 24082 May              5 37597     NA
+##  6 1997 Jun 14469 Jun              6 24082     NA
+##  7 1997 Jul  9719 Jul              7 14469     NA
+##  8 1997 Aug 10267 Aug              8  9719     NA
+##  9 1997 Sep  9878 Sep              9 10267     NA
+## 10 1997 Oct 17385 Oct             10  9878     NA
+## 11 1997 Nov 34936 Nov             11 17385     NA
+## 12 1997 Dec 48074 Dec             12 34936     NA
+## 13 1998 Jan 54949 Jan             13 48074  62019
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In this case, as can notice in the residuals plot below, the lag variables helped in reducing the correlation of the residuals.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot_res&lt;/span&gt;(md2)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; When forecasting the feature values of the series with the &lt;a href=&#34;(https://ramikrispin.github.io/forecastLM/reference/forecastLM.html)&#34;&gt;forecastLM&lt;/a&gt; function (see example below), for lag n the function will automatically map the last n observations for the corresponding first n observations. If the forecast horizon is greater than n observations, it will utilize the corresponding predicted values from observation n+1 and moving forward.&lt;/p&gt;
+&lt;h3 id=&#34;variables-selection-with-stepwise-regression&#34;&gt;Variables selection with stepwise regression&lt;/h3&gt;
+&lt;p&gt;The &lt;code&gt;step&lt;/code&gt; argument enables you to apply a stepwise regression method for variable selection based on the &lt;a href=&#34;https://en.wikipedia.org/wiki/Akaike_information_criterion&#34;&gt;AIC&lt;/a&gt; (Akaike Information Criterion). For example, let&amp;rsquo;s add some noise by adding the 6th lag, in addition to the 1st and 12th lags:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;md3 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;trainLM&lt;/span&gt;(input &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ny_gas, 
+               y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;y&amp;#34;&lt;/span&gt;,
+               trend &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(linear &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;),
+               seasonal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;month&amp;#34;&lt;/span&gt;,
+               lags &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt;),
+               step &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Start:  AIC=4467.39
+## y ~ month + linear_trend + lag_1 + lag_6 + lag_12
+## 
+##                Df  Sum of Sq         RSS     AIC
+## - lag_6         1   25831874  5920397742 4466.53
+## &amp;lt;none&amp;gt;                        5894565868 4467.39
+## - lag_12        1   91670535  5986236404 4469.43
+## - linear_trend  1  166735011  6061300879 4472.69
+## - lag_1         1 2023866568  7918432436 4542.72
+## - month        11 5233830014 11128395882 4611.88
+## 
+## Step:  AIC=4466.53
+## y ~ month + linear_trend + lag_1 + lag_12
+## 
+##                Df  Sum of Sq         RSS     AIC
+## &amp;lt;none&amp;gt;                        5920397742 4466.53
+## - lag_12        1  105325824  6025723567 4469.15
+## - linear_trend  1  140951656  6061349399 4470.70
+## - lag_1         1 2137859906  8058257649 4545.30
+## - month        11 5687037904 11607435647 4620.92
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;summary&lt;/span&gt;(md3&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;model)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## stats::lm(formula = y ~ month + linear_trend + lag_1 + lag_12, 
+##     data = df1)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -16244.65  -1722.06   -127.02   1737.53  15241.24 
+## 
+## Coefficients:
+##                   Estimate    Std. Error  t value              Pr(&amp;gt;|t|)    
+## (Intercept)   32265.964782   4365.570790   7.3910   0.00000000000224972 ***
+## monthFeb     -12055.401516   1722.177908  -7.0001   0.00000000002402279 ***
+## monthMar     -16236.106785   1758.014778  -9.2355 &amp;lt; 0.00000000000000022 ***
+## monthApr     -31687.887252   2407.133951 -13.1642 &amp;lt; 0.00000000000000022 ***
+## monthMay     -34236.087062   3128.014939 -10.9450 &amp;lt; 0.00000000000000022 ***
+## monthJun     -33093.376259   3698.769808  -8.9471 &amp;lt; 0.00000000000000022 ***
+## monthJul     -31397.220717   3977.363059  -7.8940   0.00000000000009549 ***
+## monthAug     -30800.918841   4071.729734  -7.5646   0.00000000000076668 ***
+## monthSep     -29800.859834   4068.696270  -7.3244   0.00000000000338633 ***
+## monthOct     -23509.033810   3764.733548  -6.2445   0.00000000184222790 ***
+## monthNov     -11343.231562   2975.266737  -3.8125             0.0001738 ***
+## monthDec      -2268.087593   1939.589740  -1.1694             0.2433840    
+## linear_trend     10.714705      4.418472   2.4250             0.0160272 *  
+## lag_1             0.513078      0.054328   9.4441 &amp;lt; 0.00000000000000022 ***
+## lag_12            0.118482      0.056521   2.0962             0.0370788 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4895.8 on 247 degrees of freedom
+## Multiple R-squared:  0.95857,	Adjusted R-squared:  0.95622 
+## F-statistic: 408.16 on 14 and 247 DF,  p-value: &amp;lt; 0.000000000000000222
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;As expected, the stepwise regression dropped the 6th lag variable.&lt;/p&gt;
+&lt;h3 id=&#34;handling-special-events-and-outliers&#34;&gt;Handling special events and outliers&lt;/h3&gt;
+&lt;p&gt;The &lt;code&gt;events&lt;/code&gt; argument allows you to handle special events (e.g., non-seasonal) and outliers. This argument takes a list of input (or inputs), each represents a set of date or time that corresponding to the series index. It than transform those inputs to flag variables with the use of a hot-encoding method.
+For instance, you can observe from the series plot above that the peaks during the years 2015, 2018, and 2019 were higher than the usual. Potentially, This could be related to unusual weather patterns such as colder temperatures than the average. You can observe on the above-trained models’ residuals plots that the residuals during those peaks were significantly higher due to a bad fit of the model. Let’s flag those events with the &lt;code&gt;events&lt;/code&gt; argument:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;events1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(outlier &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;as.Date&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2015-01-01&amp;#34;&lt;/span&gt;), &lt;span style=&#34;color:#a6e22e&#34;&gt;as.Date&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2015-02-01&amp;#34;&lt;/span&gt;), &lt;span style=&#34;color:#a6e22e&#34;&gt;as.Date&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2018-01-01&amp;#34;&lt;/span&gt;), &lt;span style=&#34;color:#a6e22e&#34;&gt;as.Date&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2019-01-01&amp;#34;&lt;/span&gt;)))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;md4 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;trainLM&lt;/span&gt;(input &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ny_gas, 
+               y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;y&amp;#34;&lt;/span&gt;,
+               trend &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(linear &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;),
+               seasonal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;month&amp;#34;&lt;/span&gt;,
+               lags &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt;),
+               events &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; events1,
+               step &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Start:  AIC=4438.35
+## y ~ outlier + month + linear_trend + lag_1 + lag_12
+## 
+##                Df  Sum of Sq         RSS     AIC
+## - lag_12        1   30530567  5306830893 4437.87
+## &amp;lt;none&amp;gt;                        5276300326 4438.35
+## - linear_trend  1  127518855  5403819181 4442.61
+## - outlier       1  644097417  5920397742 4466.53
+## - lag_1         1 1513563678  6789864004 4502.43
+## - month        11 5817216417 11093516743 4611.06
+## 
+## Step:  AIC=4437.87
+## y ~ outlier + month + linear_trend + lag_1
+## 
+##                Df   Sum of Sq         RSS     AIC
+## &amp;lt;none&amp;gt;                         5306830893 4437.87
+## - linear_trend  1   166154848  5472985741 4443.94
+## - outlier       1   718892674  6025723567 4469.15
+## - lag_1         1  1614763442  6921594336 4505.47
+## - month        11 37114665006 42421495899 4960.48
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;summary&lt;/span&gt;(md4&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;model)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## stats::lm(formula = y ~ outlier + month + linear_trend + lag_1, 
+##     data = df1)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -16819.93  -1493.53    -18.83   1690.59  16469.41 
+## 
+## Coefficients:
+##                   Estimate    Std. Error  t value              Pr(&amp;gt;|t|)    
+## (Intercept)   41674.663767   2884.524303  14.4477 &amp;lt; 0.00000000000000022 ***
+## outlier       15018.386255   2596.332971   5.7845 0.0000000219178283339 ***
+## monthFeb     -10354.582199   1643.264690  -6.3012 0.0000000013456455566 ***
+## monthMar     -15074.741500   1559.504225  -9.6664 &amp;lt; 0.00000000000000022 ***
+## monthApr     -33447.774825   1452.659748 -23.0252 &amp;lt; 0.00000000000000022 ***
+## monthMay     -39146.223276   1722.408636 -22.7276 &amp;lt; 0.00000000000000022 ***
+## monthJun     -39847.357090   2276.907447 -17.5006 &amp;lt; 0.00000000000000022 ***
+## monthJul     -38933.664027   2605.992821 -14.9401 &amp;lt; 0.00000000000000022 ***
+## monthAug     -38583.581362   2721.780637 -14.1759 &amp;lt; 0.00000000000000022 ***
+## monthSep     -37559.002207   2759.521582 -13.6107 &amp;lt; 0.00000000000000022 ***
+## monthOct     -30334.701374   2731.190821 -11.1068 &amp;lt; 0.00000000000000022 ***
+## monthNov     -15705.106848   2409.019610  -6.5193 0.0000000003948420140 ***
+## monthDec      -3101.475052   1754.057367  -1.7682              0.078267 .  
+## linear_trend     11.330305      4.074312   2.7809              0.005838 ** 
+## lag_1             0.453819      0.052348   8.6693 0.0000000000000005852 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4635.2 on 247 degrees of freedom
+## Multiple R-squared:  0.96286,	Adjusted R-squared:  0.96075 
+## F-statistic: 457.39 on 14 and 247 DF,  p-value: &amp;lt; 0.000000000000000222
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;outlier&lt;/code&gt; variable created and added to the regression by the function. You can notice in the residuals plot below the effect of the variable on the fit of the model:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot_res&lt;/span&gt;(md4)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;h3 id=&#34;forecasting&#34;&gt;Forecasting&lt;/h3&gt;
+&lt;p&gt;Once the model is trained, forecasting the future observations of the series is strigthforward with the forecastLM function. The forecastLM function is fairly similar to the forecast function from the forecast package and it has the following arguments:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;model&lt;/code&gt; - an &lt;code&gt;trainLM&lt;/code&gt; object&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;newdata&lt;/code&gt; - a &lt;code&gt;tsibble&lt;/code&gt; object with the future values of the external regressors (is used as an input for to train the model)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;h&lt;/code&gt; - the horizon of the forecast&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pi&lt;/code&gt; - the level of the prediction intervals, by default will calculate the 80% and 95% prediction intervals&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;fc4 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;forecastLM&lt;/span&gt;(md4, h &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;60&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;plot_fc&lt;/code&gt; function returns a visualization of the forecasted object:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot_fc&lt;/span&gt;(fc4)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;The &lt;code&gt;plot_fc&lt;/code&gt; has six customized color themes. By default, the function will use the &lt;code&gt;normal&lt;/code&gt; theme (as the plot above), which is similar to the &lt;strong&gt;base&lt;/strong&gt; R &lt;code&gt;plot&lt;/code&gt; function color theme (prediction intervals with shaded gray colors). In addition to the &lt;code&gt;normal&lt;/code&gt; theme, there are &lt;code&gt;classic&lt;/code&gt;, &lt;code&gt;darkBlue&lt;/code&gt;, &lt;code&gt;darkPink&lt;/code&gt;, &lt;code&gt;darkGreen&lt;/code&gt;, and &lt;code&gt;lightBeige&lt;/code&gt; themes. For example, we will change the theme to &lt;code&gt;darkPink&lt;/code&gt; with the &lt;code&gt;theme&lt;/code&gt; argument:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot_fc&lt;/span&gt;(fc4, theme &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;darkPink&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Last but not leaset, the package is on an early &lt;a href=&#34;https://www.tidyverse.org/lifecycle/#experimental&#34;&gt;experimental&lt;/a&gt; lifecycle, and some issues may occur while using. If you identify any issue, please submit it over here:
+&lt;a href=&#34;https://github.com/RamiKrispin/forecastLM/issues&#34;&gt;https://github.com/RamiKrispin/forecastLM/issues&lt;/a&gt;&lt;/p&gt;
+</description>
+23    </item>
+24    
+16    <item>
+17      <title>Introduction to the forecastLM package</title>
+18      <link>/2020/02/introduction-to-the-forecastlm-package/</link>
+19      <pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate>
+20      
+21      <guid>/2020/02/introduction-to-the-forecastlm-package/</guid>
+22      <description>&lt;p&gt;I am pleased to announce a new R package - &lt;a href=&#34;https://github.com/RamiKrispin/forecastLM&#34;&gt;forecastLM&lt;/a&gt;. The package, as the name implies, provides applications for forecasting regular time series data with a linear regression model (based on the &lt;code&gt;lm&lt;/code&gt; function from the &lt;strong&gt;stats&lt;/strong&gt; package). It supports both &lt;code&gt;ts&lt;/code&gt; and &lt;code&gt;tsibble&lt;/code&gt; objects as inputs and enables simple extractions of features from the input object on the fly. Example for such features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Single or Multiple seasonal components (when applicable)&lt;/li&gt;
+&lt;li&gt;Different types of trends (regular, log, exponential, polynomial)&lt;/li&gt;
+&lt;li&gt;Adding past lags&lt;/li&gt;
+&lt;li&gt;Piecewise regression&lt;/li&gt;
+&lt;li&gt;Variables selection with stepwise regression&lt;/li&gt;
+&lt;li&gt;Handle events and outliers&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In addition, it provides interactive data visualization tools utilizing the &lt;a href=&#34;https://plot.ly/r/&#34;&gt;plotly&lt;/a&gt; package. More details about the package available here:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Github page: &lt;a href=&#34;https://github.com/RamiKrispin/forecastLM&#34;&gt;https://github.com/RamiKrispin/forecastLM&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Package site (work on progress): &lt;a href=&#34;https://ramikrispin.github.io/forecastLM/&#34;&gt;https://ramikrispin.github.io/forecastLM/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Issues: &lt;a href=&#34;https://github.com/RamiKrispin/forecastLM/issues&#34;&gt;https://github.com/RamiKrispin/forecastLM/issues&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;installation&#34;&gt;Installation&lt;/h3&gt;
+&lt;p&gt;The package is still under development and currently available for installation through package Github repo:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# install.packages(&amp;#34;remotes&amp;#34;)&lt;/span&gt;
+remotes&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;install_github&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;RamiKrispin/forecastLM&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;forecasting-the-residential-demand-for-natural-gas-in-new-york&#34;&gt;Forecasting the residential demand for natural gas in New York&lt;/h3&gt;
+&lt;p&gt;In the example below, we will use the &lt;a href=&#34;https://ramikrispin.github.io/forecastLM/reference/trainLM.html&#34;&gt;trainLM&lt;/a&gt; function to train a linear regression model to forecast the residential demand for natural gas in New York state. As the goal is to demonstrate the key functions of the package, we will skip the descriptive analysis process (which generally you shouldn&amp;rsquo;t!) and focus on the training the forecasting process.&lt;/p&gt;
+&lt;p&gt;The demand for natural gas in New York state is one of the datasets available on the package and was sourced from the &lt;a href=&#34;https://www.eia.gov/&#34;&gt;US Energy Information Administration&lt;/a&gt; API. Let&amp;rsquo;s load the series and review its main characteristics:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(forecastLM)
+
+&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ny_gas&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#a6e22e&#34;&gt;class&lt;/span&gt;(ny_gas)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;tbl_ts&amp;quot;     &amp;quot;tbl_df&amp;quot;     &amp;quot;tbl&amp;quot;        &amp;quot;data.frame&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;head&lt;/span&gt;(ny_gas)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##         date     y
+## 1 1997-01-01 62019
+## 2 1997-02-01 56003
+## 3 1997-03-01 51213
+## 4 1997-04-01 37597
+## 5 1997-05-01 24082
+## 6 1997-06-01 14469
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;ny_gas&lt;/code&gt; series is a regular time-series with monthly frequency in a &lt;code&gt;tsibble&lt;/code&gt; format. We will use the &lt;code&gt;ts_plot&lt;/code&gt; function from the &lt;a href=&#34;https://ramikrispin.github.io/TSstudio/&#34;&gt;TSstudio&lt;/a&gt; package to plot the series:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(TSstudio)
+
+&lt;span style=&#34;color:#a6e22e&#34;&gt;ts_plot&lt;/span&gt;(ny_gas,
+        title &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;The New York Natural Gas Residential Monthly Consumption&amp;#34;&lt;/span&gt;,
+        Ytitle &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Million Cubic Feet&amp;#34;&lt;/span&gt;,
+        Xtitle &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Source: US Energy Information Administration (Jan 2020)&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;preserve61283922b582fc0d&lt;/p&gt;
+&lt;p&gt;As can see in the plot above, the series has strong seasonality. Although it is not pronounced well in the plot, for simplicity, we will assume that the series has linear growth.&lt;/p&gt;
+&lt;h3 id=&#34;basic-forecasting-model&#34;&gt;Basic forecasting model&lt;/h3&gt;
+&lt;p&gt;We will start with a simplistic model, fitting a linear trend and monthly seasonality with the &lt;code&gt;trend&lt;/code&gt; and &lt;code&gt;seasonal&lt;/code&gt; arguments, respectivly:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;md1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;trainLM&lt;/span&gt;(input &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ny_gas, 
+               y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;y&amp;#34;&lt;/span&gt;,
+               trend &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(linear &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;),
+               seasonal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;month&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;trainLM&lt;/code&gt; function return a list with 5 objects:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;model&lt;/code&gt; - the &lt;code&gt;lm&lt;/code&gt; model output&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fitted&lt;/code&gt; - the fitted values&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;residuals&lt;/code&gt; - the residuals (i.e., actuals - fitted)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;parameters&lt;/code&gt; - the model parameters&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;series&lt;/code&gt; - the intput series with the features that build to fit the model&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;summary&lt;/span&gt;(md1)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##            Length Class      Mode
+## model      13     lm         list
+## fitted      2     data.frame list
+## residuals   2     tbl_ts     list
+## parameters 13     -none-     list
+## series      4     tbl_ts     list
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can use the &lt;code&gt;summary&lt;/code&gt; function to view the model summary:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;summary&lt;/span&gt;(md1&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;model)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## stats::lm(formula = f, data = df1)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -21026.5  -2741.6   -412.8   2853.0  23582.2 
+## 
+## Coefficients:
+##                Estimate Std. Error  t value              Pr(&amp;gt;|t|)    
+## (Intercept)   66720.017   1340.437  49.7748 &amp;lt; 0.00000000000000022 ***
+## monthFeb      -5094.059   1704.010  -2.9895              0.003061 ** 
+## monthMar     -12667.248   1704.027  -7.4337  0.000000000001514748 ***
+## monthApr     -34179.741   1704.056 -20.0579 &amp;lt; 0.00000000000000022 ***
+## monthMay     -49716.104   1704.096 -29.1745 &amp;lt; 0.00000000000000022 ***
+## monthJun     -57592.685   1704.148 -33.7956 &amp;lt; 0.00000000000000022 ***
+## monthJul     -60314.048   1704.211 -35.3912 &amp;lt; 0.00000000000000022 ***
+## monthAug     -61100.585   1704.285 -35.8512 &amp;lt; 0.00000000000000022 ***
+## monthSep     -60509.165   1704.371 -35.5023 &amp;lt; 0.00000000000000022 ***
+## monthOct     -53000.442   1704.468 -31.0950 &amp;lt; 0.00000000000000022 ***
+## monthNov     -34896.516   1723.350 -20.2492 &amp;lt; 0.00000000000000022 ***
+## monthDec     -14487.892   1723.401  -8.4066  0.000000000000002769 ***
+## linear_trend     27.059      4.416   6.1274  0.000000003276170518 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 5778.6 on 261 degrees of freedom
+## Multiple R-squared:  0.94076,	Adjusted R-squared:  0.93804 
+## F-statistic: 345.41 on 12 and 261 DF,  p-value: &amp;lt; 0.000000000000000222
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;plot_res&lt;/code&gt; function provides a residuals plot. Besides the standard residual plot (e.g., residuals, residauls correlation and normality) it provides on the top of the plot a comparson view of the fitted values against the series itself. This is where the power of interactivity come into action as it enables to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Quickly identify outliers or observations that the model did not fit well, and linked to the event in the series itself&lt;/li&gt;
+&lt;li&gt;As the residuals and the fitted vs. actuals plots are both linked, when zoom-in on one, it will automatically will zoom-in on the corresponding observations on the second plot (try it!)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot_res&lt;/span&gt;(md1)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;preservef2195159062cb8f8&lt;/p&gt;
+&lt;h3 id=&#34;adding-lags-regressors&#34;&gt;Adding lags regressors&lt;/h3&gt;
+&lt;p&gt;As can see in the ACF plot on the residual plot above, the residuals are correlated. This mainly implies that some patterns left on the data which the model did not capture. One way to capture those patterns is by regress the series with its past lags. This is generally equivalent to an AR (Autoregressive) process. The &lt;code&gt;lags&lt;/code&gt; argument enables you to add lags regressor by defining the lags number. For example, let’s add to the model the first and seasonal lags by setting the lags argument to &lt;code&gt;c(1, 12)&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;md2 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;trainLM&lt;/span&gt;(input &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ny_gas, 
+               y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;y&amp;#34;&lt;/span&gt;,
+               trend &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(linear &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;),
+               seasonal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;month&amp;#34;&lt;/span&gt;,
+               lags &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt;))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;summary&lt;/span&gt;(md2&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;model)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## stats::lm(formula = f, data = df1)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -16244.65  -1722.06   -127.02   1737.53  15241.24 
+## 
+## Coefficients:
+##                   Estimate    Std. Error  t value              Pr(&amp;gt;|t|)    
+## (Intercept)   32265.964782   4365.570790   7.3910   0.00000000000224972 ***
+## monthFeb     -12055.401516   1722.177908  -7.0001   0.00000000002402279 ***
+## monthMar     -16236.106785   1758.014778  -9.2355 &amp;lt; 0.00000000000000022 ***
+## monthApr     -31687.887252   2407.133951 -13.1642 &amp;lt; 0.00000000000000022 ***
+## monthMay     -34236.087062   3128.014939 -10.9450 &amp;lt; 0.00000000000000022 ***
+## monthJun     -33093.376259   3698.769808  -8.9471 &amp;lt; 0.00000000000000022 ***
+## monthJul     -31397.220717   3977.363059  -7.8940   0.00000000000009549 ***
+## monthAug     -30800.918841   4071.729734  -7.5646   0.00000000000076668 ***
+## monthSep     -29800.859834   4068.696270  -7.3244   0.00000000000338633 ***
+## monthOct     -23509.033810   3764.733548  -6.2445   0.00000000184222790 ***
+## monthNov     -11343.231562   2975.266737  -3.8125             0.0001738 ***
+## monthDec      -2268.087593   1939.589740  -1.1694             0.2433840    
+## linear_trend     10.714705      4.418472   2.4250             0.0160272 *  
+## lag_1             0.513078      0.054328   9.4441 &amp;lt; 0.00000000000000022 ***
+## lag_12            0.118482      0.056521   2.0962             0.0370788 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4895.8 on 247 degrees of freedom
+## Multiple R-squared:  0.95857,	Adjusted R-squared:  0.95622 
+## F-statistic: 408.16 on 14 and 247 DF,  p-value: &amp;lt; 0.000000000000000222
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can see on the summary of the model above that two additional variables were added by the &lt;code&gt;trainLM&lt;/code&gt; function - &lt;code&gt;lag_1&lt;/code&gt; and &lt;code&gt;lag_12&lt;/code&gt;, corresponding to the first and seasonal lags of the series. Those new features added to the input series and available on the output of the trained model:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;head&lt;/span&gt;(md2&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;series, &lt;span style=&#34;color:#ae81ff&#34;&gt;13&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## # A tsibble: 13 x 6 [1M]
+##        date     y month linear_trend lag_1 lag_12
+##       &amp;lt;mth&amp;gt; &amp;lt;int&amp;gt; &amp;lt;fct&amp;gt;        &amp;lt;int&amp;gt; &amp;lt;int&amp;gt;  &amp;lt;int&amp;gt;
+##  1 1997 Jan 62019 Jan              1    NA     NA
+##  2 1997 Feb 56003 Feb              2 62019     NA
+##  3 1997 Mar 51213 Mar              3 56003     NA
+##  4 1997 Apr 37597 Apr              4 51213     NA
+##  5 1997 May 24082 May              5 37597     NA
+##  6 1997 Jun 14469 Jun              6 24082     NA
+##  7 1997 Jul  9719 Jul              7 14469     NA
+##  8 1997 Aug 10267 Aug              8  9719     NA
+##  9 1997 Sep  9878 Sep              9 10267     NA
+## 10 1997 Oct 17385 Oct             10  9878     NA
+## 11 1997 Nov 34936 Nov             11 17385     NA
+## 12 1997 Dec 48074 Dec             12 34936     NA
+## 13 1998 Jan 54949 Jan             13 48074  62019
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In this case, as can notice in the residuals plot below, the lag variables helped in reducing the correlation of the residuals.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot_res&lt;/span&gt;(md2)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;preservea292d17abf877052&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; When forecasting the feature values of the series with the &lt;a href=&#34;(https://ramikrispin.github.io/forecastLM/reference/forecastLM.html)&#34;&gt;forecastLM&lt;/a&gt; function (see example below), for lag n the function will automatically map the last n observations for the corresponding first n observations. If the forecast horizon is greater than n observations, it will utilize the corresponding predicted values from observation n+1 and moving forward.&lt;/p&gt;
+&lt;h3 id=&#34;variables-selection-with-stepwise-regression&#34;&gt;Variables selection with stepwise regression&lt;/h3&gt;
+&lt;p&gt;The &lt;code&gt;step&lt;/code&gt; argument enables you to apply a stepwise regression method for variable selection based on the &lt;a href=&#34;https://en.wikipedia.org/wiki/Akaike_information_criterion&#34;&gt;AIC&lt;/a&gt; (Akaike Information Criterion). For example, let&amp;rsquo;s add some noise by adding the 6th lag, in addition to the 1st and 12th lags:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;md3 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;trainLM&lt;/span&gt;(input &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ny_gas, 
+               y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;y&amp;#34;&lt;/span&gt;,
+               trend &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(linear &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;),
+               seasonal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;month&amp;#34;&lt;/span&gt;,
+               lags &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt;),
+               step &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Start:  AIC=4467.39
+## y ~ month + linear_trend + lag_1 + lag_6 + lag_12
+## 
+##                Df  Sum of Sq         RSS     AIC
+## - lag_6         1   25831874  5920397742 4466.53
+## &amp;lt;none&amp;gt;                        5894565868 4467.39
+## - lag_12        1   91670535  5986236404 4469.43
+## - linear_trend  1  166735011  6061300879 4472.69
+## - lag_1         1 2023866568  7918432436 4542.72
+## - month        11 5233830014 11128395882 4611.88
+## 
+## Step:  AIC=4466.53
+## y ~ month + linear_trend + lag_1 + lag_12
+## 
+##                Df  Sum of Sq         RSS     AIC
+## &amp;lt;none&amp;gt;                        5920397742 4466.53
+## - lag_12        1  105325824  6025723567 4469.15
+## - linear_trend  1  140951656  6061349399 4470.70
+## - lag_1         1 2137859906  8058257649 4545.30
+## - month        11 5687037904 11607435647 4620.92
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;summary&lt;/span&gt;(md3&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;model)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## stats::lm(formula = y ~ month + linear_trend + lag_1 + lag_12, 
+##     data = df1)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -16244.65  -1722.06   -127.02   1737.53  15241.24 
+## 
+## Coefficients:
+##                   Estimate    Std. Error  t value              Pr(&amp;gt;|t|)    
+## (Intercept)   32265.964782   4365.570790   7.3910   0.00000000000224972 ***
+## monthFeb     -12055.401516   1722.177908  -7.0001   0.00000000002402279 ***
+## monthMar     -16236.106785   1758.014778  -9.2355 &amp;lt; 0.00000000000000022 ***
+## monthApr     -31687.887252   2407.133951 -13.1642 &amp;lt; 0.00000000000000022 ***
+## monthMay     -34236.087062   3128.014939 -10.9450 &amp;lt; 0.00000000000000022 ***
+## monthJun     -33093.376259   3698.769808  -8.9471 &amp;lt; 0.00000000000000022 ***
+## monthJul     -31397.220717   3977.363059  -7.8940   0.00000000000009549 ***
+## monthAug     -30800.918841   4071.729734  -7.5646   0.00000000000076668 ***
+## monthSep     -29800.859834   4068.696270  -7.3244   0.00000000000338633 ***
+## monthOct     -23509.033810   3764.733548  -6.2445   0.00000000184222790 ***
+## monthNov     -11343.231562   2975.266737  -3.8125             0.0001738 ***
+## monthDec      -2268.087593   1939.589740  -1.1694             0.2433840    
+## linear_trend     10.714705      4.418472   2.4250             0.0160272 *  
+## lag_1             0.513078      0.054328   9.4441 &amp;lt; 0.00000000000000022 ***
+## lag_12            0.118482      0.056521   2.0962             0.0370788 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4895.8 on 247 degrees of freedom
+## Multiple R-squared:  0.95857,	Adjusted R-squared:  0.95622 
+## F-statistic: 408.16 on 14 and 247 DF,  p-value: &amp;lt; 0.000000000000000222
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;As expected, the stepwise regression dropped the 6th lag variable.&lt;/p&gt;
+&lt;h3 id=&#34;handling-special-events-and-outliers&#34;&gt;Handling special events and outliers&lt;/h3&gt;
+&lt;p&gt;The &lt;code&gt;events&lt;/code&gt; argument allows you to handle special events (e.g., non-seasonal) and outliers. This argument takes a list of input (or inputs), each represents a set of date or time that corresponding to the series index. It than transform those inputs to flag variables with the use of a hot-encoding method.
+For instance, you can observe from the series plot above that the peaks during the years 2015, 2018, and 2019 were higher than the usual. Potentially, This could be related to unusual weather patterns such as colder temperatures than the average. You can observe on the above-trained models’ residuals plots that the residuals during those peaks were significantly higher due to a bad fit of the model. Let’s flag those events with the &lt;code&gt;events&lt;/code&gt; argument:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;events1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(outlier &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;as.Date&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2015-01-01&amp;#34;&lt;/span&gt;), &lt;span style=&#34;color:#a6e22e&#34;&gt;as.Date&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2015-02-01&amp;#34;&lt;/span&gt;), &lt;span style=&#34;color:#a6e22e&#34;&gt;as.Date&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2018-01-01&amp;#34;&lt;/span&gt;), &lt;span style=&#34;color:#a6e22e&#34;&gt;as.Date&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;2019-01-01&amp;#34;&lt;/span&gt;)))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;md4 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;trainLM&lt;/span&gt;(input &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; ny_gas, 
+               y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;y&amp;#34;&lt;/span&gt;,
+               trend &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;list&lt;/span&gt;(linear &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;),
+               seasonal &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;month&amp;#34;&lt;/span&gt;,
+               lags &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;12&lt;/span&gt;),
+               events &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; events1,
+               step &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TRUE&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Start:  AIC=4438.35
+## y ~ outlier + month + linear_trend + lag_1 + lag_12
+## 
+##                Df  Sum of Sq         RSS     AIC
+## - lag_12        1   30530567  5306830893 4437.87
+## &amp;lt;none&amp;gt;                        5276300326 4438.35
+## - linear_trend  1  127518855  5403819181 4442.61
+## - outlier       1  644097417  5920397742 4466.53
+## - lag_1         1 1513563678  6789864004 4502.43
+## - month        11 5817216417 11093516743 4611.06
+## 
+## Step:  AIC=4437.87
+## y ~ outlier + month + linear_trend + lag_1
+## 
+##                Df   Sum of Sq         RSS     AIC
+## &amp;lt;none&amp;gt;                         5306830893 4437.87
+## - linear_trend  1   166154848  5472985741 4443.94
+## - outlier       1   718892674  6025723567 4469.15
+## - lag_1         1  1614763442  6921594336 4505.47
+## - month        11 37114665006 42421495899 4960.48
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;summary&lt;/span&gt;(md4&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;model)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## stats::lm(formula = y ~ outlier + month + linear_trend + lag_1, 
+##     data = df1)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -16819.93  -1493.53    -18.83   1690.59  16469.41 
+## 
+## Coefficients:
+##                   Estimate    Std. Error  t value              Pr(&amp;gt;|t|)    
+## (Intercept)   41674.663767   2884.524303  14.4477 &amp;lt; 0.00000000000000022 ***
+## outlier       15018.386255   2596.332971   5.7845 0.0000000219178283339 ***
+## monthFeb     -10354.582199   1643.264690  -6.3012 0.0000000013456455566 ***
+## monthMar     -15074.741500   1559.504225  -9.6664 &amp;lt; 0.00000000000000022 ***
+## monthApr     -33447.774825   1452.659748 -23.0252 &amp;lt; 0.00000000000000022 ***
+## monthMay     -39146.223276   1722.408636 -22.7276 &amp;lt; 0.00000000000000022 ***
+## monthJun     -39847.357090   2276.907447 -17.5006 &amp;lt; 0.00000000000000022 ***
+## monthJul     -38933.664027   2605.992821 -14.9401 &amp;lt; 0.00000000000000022 ***
+## monthAug     -38583.581362   2721.780637 -14.1759 &amp;lt; 0.00000000000000022 ***
+## monthSep     -37559.002207   2759.521582 -13.6107 &amp;lt; 0.00000000000000022 ***
+## monthOct     -30334.701374   2731.190821 -11.1068 &amp;lt; 0.00000000000000022 ***
+## monthNov     -15705.106848   2409.019610  -6.5193 0.0000000003948420140 ***
+## monthDec      -3101.475052   1754.057367  -1.7682              0.078267 .  
+## linear_trend     11.330305      4.074312   2.7809              0.005838 ** 
+## lag_1             0.453819      0.052348   8.6693 0.0000000000000005852 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4635.2 on 247 degrees of freedom
+## Multiple R-squared:  0.96286,	Adjusted R-squared:  0.96075 
+## F-statistic: 457.39 on 14 and 247 DF,  p-value: &amp;lt; 0.000000000000000222
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;outlier&lt;/code&gt; variable created and added to the regression by the function. You can notice in the residuals plot below the effect of the variable on the fit of the model:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot_res&lt;/span&gt;(md4)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;preserve3a4cb080f45c5e9d&lt;/p&gt;
+&lt;h3 id=&#34;forecasting&#34;&gt;Forecasting&lt;/h3&gt;
+&lt;p&gt;Once the model is trained, forecasting the future observations of the series is strigthforward with the forecastLM function. The forecastLM function is fairly similar to the forecast function from the forecast package and it has the following arguments:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;model&lt;/code&gt; - an &lt;code&gt;trainLM&lt;/code&gt; object&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;newdata&lt;/code&gt; - a &lt;code&gt;tsibble&lt;/code&gt; object with the future values of the external regressors (is used as an input for to train the model)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;h&lt;/code&gt; - the horizon of the forecast&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pi&lt;/code&gt; - the level of the prediction intervals, by default will calculate the 80% and 95% prediction intervals&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;fc4 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;forecastLM&lt;/span&gt;(md4, h &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;60&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;plot_fc&lt;/code&gt; function returns a visualization of the forecasted object:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot_fc&lt;/span&gt;(fc4)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;preservea2fef0a90c791d47&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;plot_fc&lt;/code&gt; has six customized color themes. By default, the function will use the &lt;code&gt;normal&lt;/code&gt; theme (as the plot above), which is similar to the &lt;strong&gt;base&lt;/strong&gt; R &lt;code&gt;plot&lt;/code&gt; function color theme (prediction intervals with shaded gray colors). In addition to the &lt;code&gt;normal&lt;/code&gt; theme, there are &lt;code&gt;classic&lt;/code&gt;, &lt;code&gt;darkBlue&lt;/code&gt;, &lt;code&gt;darkPink&lt;/code&gt;, &lt;code&gt;darkGreen&lt;/code&gt;, and &lt;code&gt;lightBeige&lt;/code&gt; themes. For example, we will change the theme to &lt;code&gt;darkPink&lt;/code&gt; with the &lt;code&gt;theme&lt;/code&gt; argument:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot_fc&lt;/span&gt;(fc4, theme &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;darkPink&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;preserve44f53fefa4a7c2ea&lt;/p&gt;
+&lt;p&gt;Last but not leaset, the package is on an early &lt;a href=&#34;https://www.tidyverse.org/lifecycle/#experimental&#34;&gt;experimental&lt;/a&gt; lifecycle, and some issues may occur while using. If you identify any issue, please submit it over here:
+&lt;a href=&#34;https://github.com/RamiKrispin/forecastLM/issues&#34;&gt;https://github.com/RamiKrispin/forecastLM/issues&lt;/a&gt;&lt;/p&gt;
 </description>
 23    </item>
 24    
