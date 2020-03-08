@@ -21,6 +21,17 @@
 
 &lt;p&gt;The &lt;a href=&#34;https://ramikrispin.github.io/coronavirus/&#34;&gt;coronavirus&lt;/a&gt; R dataset package provides a daily summary for the Coronavirus new cases by geographic location (i.e., country and province/state when applicable), and case type (confirmed, recovered, and death). The raw data pulled from the Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus &lt;a href=&#34;https://github.com/CSSEGISandData/COVID-19&#34;&gt;repository&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; More granular data for the main countries affected by the virus (South Korea, Italy, Iran, etc.) will add to the package in the coming days.&lt;/p&gt;
+&lt;div id=&#34;installation&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Installation&lt;/h3&gt;
+&lt;p&gt;You can install the CRAN version (v0.1.0):&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;install.packages(&amp;quot;coronavirus&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Or, install the Github version (v.0.1.0.9000):&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# install.packages(&amp;quot;devtools&amp;quot;)
+devtools::install_github(&amp;quot;RamiKrispin/coronavirus&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The CRAN version (v0.1.0) is update up to Feb 16, 2020, where the Github version (v.0.1.0.9000) is update on a daily bases. In this post I will use the Github version.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-coronavirus-dataset&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;The coronavirus dataset&lt;/h3&gt;
 &lt;p&gt;The &lt;code&gt;coronavirus&lt;/code&gt; dataset contains the following fields:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;date&lt;/code&gt; - The date of the summary&lt;/li&gt;
@@ -31,14 +42,83 @@
 &lt;li&gt;&lt;code&gt;cases&lt;/code&gt; - the number of daily cases (corresponding to the case type)&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;type&lt;/code&gt; - the type of case (i.e., confirmed, death, and recovered)&lt;/li&gt;
 &lt;/ul&gt;
-&lt;div id=&#34;installation&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Installation&lt;/h3&gt;
-&lt;p&gt;You can install the CRAN version (v0.1.0):&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;install.packages(&amp;quot;coronavirus&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Or, install the Github version (v.0.1.0.9000):&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# install.packages(&amp;quot;devtools&amp;quot;)
-devtools::install_github(&amp;quot;RamiKrispin/coronavirus&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The CRAN version (v0.1.0) is update up to Feb 16, 2020, where the Github version (v.0.1.0.9000) is update on a daily bases.&lt;/p&gt;
+&lt;p&gt;We can use the &lt;code&gt;head&lt;/code&gt; and &lt;code&gt;str&lt;/code&gt; functions to see the structure of the dataset:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(coronavirus)
+
+data(&amp;quot;coronavirus&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;str(coronavirus)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Classes &amp;#39;tbl_df&amp;#39;, &amp;#39;tbl&amp;#39; and &amp;#39;data.frame&amp;#39;:    3152 obs. of  7 variables:
+##  $ Province.State: chr  &amp;quot;&amp;quot; &amp;quot;&amp;quot; &amp;quot;&amp;quot; &amp;quot;Anhui&amp;quot; ...
+##  $ Country.Region: chr  &amp;quot;Japan&amp;quot; &amp;quot;South Korea&amp;quot; &amp;quot;Thailand&amp;quot; &amp;quot;Mainland China&amp;quot; ...
+##  $ Lat           : num  36 36 15 31.8 40.2 ...
+##  $ Long          : num  138 128 101 117 116 ...
+##  $ date          : Date, format: &amp;quot;2020-01-22&amp;quot; &amp;quot;2020-01-22&amp;quot; &amp;quot;2020-01-22&amp;quot; &amp;quot;2020-01-22&amp;quot; ...
+##  $ cases         : int  2 1 2 1 14 6 1 26 2 1 ...
+##  $ type          : chr  &amp;quot;confirmed&amp;quot; &amp;quot;confirmed&amp;quot; &amp;quot;confirmed&amp;quot; &amp;quot;confirmed&amp;quot; ...&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;head(coronavirus)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   Province.State Country.Region     Lat     Long       date cases      type
+## 1                         Japan 36.0000 138.0000 2020-01-22     2 confirmed
+## 2                   South Korea 36.0000 128.0000 2020-01-22     1 confirmed
+## 3                      Thailand 15.0000 101.0000 2020-01-22     2 confirmed
+## 4          Anhui Mainland China 31.8257 117.2264 2020-01-22     1 confirmed
+## 5        Beijing Mainland China 40.1824 116.4142 2020-01-22    14 confirmed
+## 6      Chongqing Mainland China 30.0572 107.8740 2020-01-22     6 confirmed&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;summarize-the-data&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Summarize the data&lt;/h4&gt;
+&lt;p&gt;In the examples below, we will use the &lt;strong&gt;dplyr&lt;/strong&gt; and &lt;strong&gt;tidyr&lt;/strong&gt; packages to answer the following questions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Countries with the highest number of confirmed cases&lt;/li&gt;
+&lt;li&gt;Mortality and recovery rates&lt;/li&gt;
+&lt;li&gt;Distribution of new cases during the most recent day&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;top-affected-countries&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Top affected countries&lt;/h4&gt;
+&lt;p&gt;The first example demonstrates how to aggregate the data by country and case type, and display the countries with the highest number of confirmed cases:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr)
+library(tidyr)
+
+
+country_view &amp;lt;- coronavirus %&amp;gt;% 
+  group_by(Country.Region, type) %&amp;gt;%
+  summarise(total = sum(cases, na.rm = TRUE)) %&amp;gt;% 
+  pivot_wider(names_from = type,
+              values_from = total) %&amp;gt;%
+  select(country = Country.Region, confirmed, recovered, death) %&amp;gt;%
+  arrange(-confirmed)
+
+
+# View the top 20 countries
+country_view %&amp;gt;% head(20)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 20 x 4
+## # Groups:   country [20]
+##    country        confirmed recovered death
+##    &amp;lt;chr&amp;gt;              &amp;lt;int&amp;gt;     &amp;lt;int&amp;gt; &amp;lt;int&amp;gt;
+##  1 Mainland China     80652     55478  3070
+##  2 South Korea         7041       135    44
+##  3 Italy               5883       589   233
+##  4 Iran                5823      1669   145
+##  5 France               949        12    11
+##  6 Germany              799        18    NA
+##  7 Others               696        40     6
+##  8 Spain                500        30    10
+##  9 Japan                461        76     6
+## 10 US                   417         8    17
+## 11 Switzerland          268         3     1
+## 12 UK                   206        18     2
+## 13 Netherlands          188        NA     1
+## 14 Belgium              169         1    NA
+## 15 Sweden               161        NA    NA
+## 16 Norway               147        NA    NA
+## 17 Singapore            138        78    NA
+## 18 Hong Kong            108        51     2
+## 19 Malaysia              93        23    NA
+## 20 Bahrain               85         4    NA&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;recovery-and-mortality-rates&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Recovery and mortality rates&lt;/h4&gt;
+&lt;p&gt;Using the above cases summary by country, we can derive the recovery and mortality rates, where:&lt;/p&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 </description>
 23    </item>
