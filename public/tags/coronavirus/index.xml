@@ -18,7 +18,7 @@
       
       <guid>/2020/03/introduction-to-the-coronavirus-package/</guid>
       <description>The coronavirus R dataset package provides a daily summary for the Coronavirus new cases by geographic location (i.e., country and province/state when applicable), and case type (confirmed, recovered, and death). The raw data pulled from the Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus repository.
-Note: More granular data for the main countries affected by the virus (South Korea, Italy, Iran, etc.) will add to the package in the coming days.</description>
+Note: More granular data for the main countries affected by the virus (South Korea, Italy, Iran, etc.</description>
     </item>
     
   </channel>

@@ -1,0 +1,116 @@
+---
+title: covid19italy v0.2.0 is now on CRAN
+author: Rami Krispin
+date: '2020-05-11'
+slug: covid19italy-v0-2-0-is-now-on-cran
+categories: []
+tags: []
+keywords:
+  - tech
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Last week I pushed an update of the [covid19italy](https://covid19r.github.io/covid19italy/) package to CRAN (v0.2.0). The **covid19italy** R package provides a tidy format dataset of the 2019 Novel Coronavirus COVID-19 (2019-nCoV) pandemic outbreak in Italy. The package includes the following three datasets:
+
+- `italy_total` - daily summary of the outbreak on the national level
+- `italy_region` - daily summary of the outbreak on the region level
+- `italy_province` - daily summary of the outbreak on the province level 
+
+More details about the datasets available on the following [vignette](https://covid19r.github.io/covid19italy/articles/intro.html)
+
+Data source: [Italy Department of Civil Protection](http://www.protezionecivile.it/)
+
+### Main updates in version 0.2.0:
+
+* Data structure changes - updating changes in the raw data, such as adding new variables that related to the number of tests performed on both region and national level. More details available on the package [changelog](https://covid19r.github.io/covid19italy/news/index.html)
+* Geospatial columns - added the `region_spatial` and `province_spatial` columns for the `italy_region` and `italy_province` datasets, respectively. Those columns have the corresponding naming convention of Italy regions and province as in the output of the `ne_states` function from the **rnaturalearth** package. See example below
+* Cron job - the data is now automatically refreshed on a daily basis with the use of [Github Actions](https://github.com/Covid19R/covid19italy/blob/master/.github/workflows/data_refresh.yml) to run cron job
+  
+  
+### Keep the data updated
+
+While the **covid19italy** [CRAN version](https://cran.r-project.org/web/packages/covid19italy/index.html) is updated every month or two, the [Github (Dev) version](https://github.com/Covid19R/covid19italy) is updated on a daily bases. The `update_data` function enables to overcome this gap and keep the installed version with the most recent data available on the Github version:
+
+``` r
+library(covid19italy)
+
+update_data()
+```
+
+**Note:** must restart the R session to have the updates available
+
+### Plotting cases with a choropleth map
+
+As mentioned above, one of the new features in v0.2.0 is the geospatial columns on the `italy_region` and `italy_province`. Those columns are using the naming conventions as used by the [rnaturalearth](https://docs.ropensci.org/rnaturalearth/index.html) package with the ne_states function. Therefore, it allows a simple and quick merge of the data with the geometric data of the regions and provinces of Italy. The following example demonstrates the use-case of this feature along with the **rnaturalearth** and **mapview** packages to create a choropleth map of the total confirmed cases in Italy by province. We will start with pulling the geometric data of Italy with the `ne_states` function and merge it with the `italy_province` dataset:
+
+```{r message=FALSE, warning=FALSE}
+library(covid19italy)
+library(rnaturalearth)
+library(mapview)
+library(dplyr)
+
+italy_map <- ne_states(country = "Italy", returnclass = "sf")  %>% 
+  select(province = name, region, geometry)  %>%
+  left_join(italy_province %>% 
+              filter(date == max(date)), # subseting for the most recent day
+            by = c("province" = "province_spatial"))
+```
+
+Next, we will use the [mapview](https://r-spatial.github.io/mapview/index.html) package to plot the covid19 confirmed cases by Italy provinces:
+
+```{r}
+italy_map %>%
+  mapview(zcol = "total_cases")
+```
+
+
+More details and examples about plotting the covid19italy datasets with choropleth map available on the following [vignette](https://covid19r.github.io/covid19italy/articles/geospatial_visualization.html).
+
+### Summarizing total cases distribution with treemap
+
+The following example show how to create a treemap plot with the plotly
+
+```{r message=FALSE, warning=FALSE}
+library(plotly)
+
+# Get the most recent data
+conf_cases <- italy_region %>% 
+  filter(date == max(date)) %>%
+  select(region_name, cumulative_cases) %>%
+  mutate(parents = "Confirmed") 
+
+total_tests <- italy_region %>% 
+  filter(date == max(date)) %>%
+  select(region_name, total_tests) %>%
+  mutate(parents = "Total Tests") 
+
+# Create a treemap for the confirmed cases by province
+plot_ly(data = conf_cases,
+        type= "treemap",
+        values = ~cumulative_cases,
+        labels= ~ region_name,
+        parents=  ~parents,
+        domain = list(column=0),
+        name = "Confirmed",
+        textinfo="label+value+percent parent") %>%
+add_trace(data = total_tests,
+        type= "treemap",
+        values = ~total_tests,
+        labels= ~ region_name,
+        parents=  ~parents,
+        domain = list(column=1),
+        name = "Total Tests",
+        textinfo="label+value+percent parent") %>%
+  layout(title = "Dist. of Confirmed Cases vs Total Tests",
+         grid=list(columns=2, rows=1))
+
+```
+
+
+More resources about the package available on the package [site](https://github.com/Covid19R/covid19italy).
+
+  

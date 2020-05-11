@@ -20,25 +20,5 @@
       <description>I am pleased to announce a new R package - forecastLM. The package, as the name implies, provides applications for forecasting regular time series data with a linear regression model (based on the lm function from the stats package). It supports both ts and tsibble objects as inputs and enables simple extractions of features from the input object on the fly. Example for such features:</description>
     </item>
     
-    <item>
-      <title>Introduction to the forecastLM package</title>
-      <link>/2020/02/introduction-to-the-forecastlm-package/</link>
-      <pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/2020/02/introduction-to-the-forecastlm-package/</guid>
-      <description>I am pleased to announce a new R package - forecastLM. The package, as the name implies, provides applications for forecasting regular time series data with a linear regression model (based on the lm function from the stats package). It supports both ts and tsibble objects as inputs and enables simple extractions of features from the input object on the fly. Example for such features:
- Single or Multiple seasonal components (when applicable) Different types of trends (regular, log, exponential, polynomial) Adding past lags Piecewise regression Variables selection with stepwise regression Handle events and outliers  In addition, it provides interactive data visualization tools utilizing the plotly package.</description>
-    </item>
-    
-    <item>
-      <title>Introduction to the forecastLM package</title>
-      <link>/2020/02/introduction-to-the-forecastlm-package/</link>
-      <pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/2020/02/introduction-to-the-forecastlm-package/</guid>
-      <description>I am pleased to announce a new R package - forecastLM. The package, as the name implies, provides applications for forecasting regular time series data with a linear regression model (based on the lm function from the stats package). It supports both ts and tsibble objects as inputs and enables simple extractions of features from the input object on the fly. Example for such features:
- Single or Multiple seasonal components (when applicable) Different types of trends (regular, log, exponential, polynomial) Adding past lags Piecewise regression Variables selection with stepwise regression Handle events and outliers  In addition, it provides interactive data visualization tools utilizing the plotly package.</description>
-    </item>
-    
   </channel>
 </rss>

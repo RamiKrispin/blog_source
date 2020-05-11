@@ -6,20 +6,10 @@
     <description>Recent content in R on Rami Krispin</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 08 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 06 Feb 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Introduction to the coronavirus package</title>
-      <link>/2020/03/introduction-to-the-coronavirus-package/</link>
-      <pubDate>Sun, 08 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/2020/03/introduction-to-the-coronavirus-package/</guid>
-      <description>The coronavirus R dataset package provides a daily summary for the Coronavirus new cases by geographic location (i.e., country and province/state when applicable), and case type (confirmed, recovered, and death). The raw data pulled from the Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus repository.
-Note: More granular data for the main countries affected by the virus (South Korea, Italy, Iran, etc.) will add to the package in the coming days.</description>
-    </item>
     
     <item>
       <title>Introduction to the forecastLM package</title>
@@ -28,26 +18,6 @@ Note: More granular data for the main countries affected by the virus (South Kor
       
       <guid>/2020/02/introduction-to-the-forecastlm-package/</guid>
       <description>I am pleased to announce a new R package - forecastLM. The package, as the name implies, provides applications for forecasting regular time series data with a linear regression model (based on the lm function from the stats package). It supports both ts and tsibble objects as inputs and enables simple extractions of features from the input object on the fly. Example for such features:</description>
-    </item>
-    
-    <item>
-      <title>Introduction to the forecastLM package</title>
-      <link>/2020/02/introduction-to-the-forecastlm-package/</link>
-      <pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/2020/02/introduction-to-the-forecastlm-package/</guid>
-      <description>I am pleased to announce a new R package - forecastLM. The package, as the name implies, provides applications for forecasting regular time series data with a linear regression model (based on the lm function from the stats package). It supports both ts and tsibble objects as inputs and enables simple extractions of features from the input object on the fly. Example for such features:
- Single or Multiple seasonal components (when applicable) Different types of trends (regular, log, exponential, polynomial) Adding past lags Piecewise regression Variables selection with stepwise regression Handle events and outliers  In addition, it provides interactive data visualization tools utilizing the plotly package.</description>
-    </item>
-    
-    <item>
-      <title>Introduction to the forecastLM package</title>
-      <link>/2020/02/introduction-to-the-forecastlm-package/</link>
-      <pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/2020/02/introduction-to-the-forecastlm-package/</guid>
-      <description>I am pleased to announce a new R package - forecastLM. The package, as the name implies, provides applications for forecasting regular time series data with a linear regression model (based on the lm function from the stats package). It supports both ts and tsibble objects as inputs and enables simple extractions of features from the input object on the fly. Example for such features:
- Single or Multiple seasonal components (when applicable) Different types of trends (regular, log, exponential, polynomial) Adding past lags Piecewise regression Variables selection with stepwise regression Handle events and outliers  In addition, it provides interactive data visualization tools utilizing the plotly package.</description>
     </item>
     
     <item>
