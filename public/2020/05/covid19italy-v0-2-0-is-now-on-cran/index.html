@@ -7,7 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="generator" content="Hugo 0.66.0 with theme Tranquilpeak 0.4.7-BETA">
 <meta name="author" content="Rami Krispin">
-<meta name="keywords" content="tech">
+<meta name="keywords" content="covid19">
 <meta name="description" content="Last week I pushed an update of the covid19italy package to CRAN (v0.2.0). The covid19italy R package provides a tidy format dataset of the 2019 Novel Coronavirus COVID-19 (2019-nCoV) pandemic outbreak in Italy. The package includes the following three datasets:
  italy_total - daily summary of the outbreak on the national level italy_region - daily summary of the outbreak on the region level italy_province - daily summary of the outbreak on the province level  More details about the datasets available on the following vignette">
 
@@ -34,6 +34,16 @@
   
   
   
+  
+    
+      <meta property="article:tag" content="R">
+    
+      <meta property="article:tag" content="covid19italy">
+    
+      <meta property="article:tag" content="data">
+    
+      <meta property="article:tag" content="dataviz">
+    
   
 
 
@@ -374,7 +384,7 @@ add_trace(data = total_tests,
   layout(title = &quot;Dist. of Confirmed Cases vs Total Tests&quot;,
          grid=list(columns=2, rows=1))</code></pre>
 <div id="htmlwidget-2" style="width:672px;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2">{"x":{"visdat":{"6459466e0913":["function () ","plotlyVisDat"],"64596215e284":["function () ","data"]},"cur_data":"64596215e284","attrs":{"6459466e0913":{"values":{},"labels":{},"parents":{},"domain":{"column":0},"textinfo":"label+value+percent parent","name":"Confirmed","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"treemap"},"64596215e284":{"values":{},"labels":{},"parents":{},"domain":{"column":1},"textinfo":"label+value+percent parent","name":"Total Tests","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"treemap","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Dist. of Confirmed Cases vs Total Tests","grid":{"columns":2,"rows":1},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"values":[3103,385,2569,1132,4588,26796,3130,7165,8788,81507,6533,370,28665,4313,1340,3327,9774,4295,1411,1157,18722],"labels":["Abruzzo","Basilicata","P.A. Bolzano","Calabria","Campania","Emilia-Romagna","Friuli Venezia Giulia","Lazio","Liguria","Lombardia","Marche","Molise","Piemonte","Puglia","Sardegna","Sicilia","Toscana","P.A. Trento","Umbria","Valle d'Aosta","Veneto"],"parents":["Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed"],"domain":{"column":0},"textinfo":"label+value+percent parent","name":"Confirmed","type":"treemap","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null},{"values":[48110,17916,49571,46111,114819,231637,89449,178569,67322,485134,76367,9164,210370,78399,34046,102403,178208,52039,46923,9833,439522],"labels":["Abruzzo","Basilicata","P.A. Bolzano","Calabria","Campania","Emilia-Romagna","Friuli Venezia Giulia","Lazio","Liguria","Lombardia","Marche","Molise","Piemonte","Puglia","Sardegna","Sicilia","Toscana","P.A. Trento","Umbria","Valle d'Aosta","Veneto"],"parents":["Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests"],"domain":{"column":1},"textinfo":"label+value+percent parent","name":"Total Tests","type":"treemap","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"visdat":{"88723c91b5ee":["function () ","plotlyVisDat"],"887223f3b53":["function () ","data"]},"cur_data":"887223f3b53","attrs":{"88723c91b5ee":{"values":{},"labels":{},"parents":{},"domain":{"column":0},"textinfo":"label+value+percent parent","name":"Confirmed","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"treemap"},"887223f3b53":{"values":{},"labels":{},"parents":{},"domain":{"column":1},"textinfo":"label+value+percent parent","name":"Total Tests","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"treemap","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Dist. of Confirmed Cases vs Total Tests","grid":{"columns":2,"rows":1},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"values":[3103,385,2569,1132,4588,26796,3130,7165,8788,81507,6533,370,28665,4313,1340,3327,9774,4295,1411,1157,18722],"labels":["Abruzzo","Basilicata","P.A. Bolzano","Calabria","Campania","Emilia-Romagna","Friuli Venezia Giulia","Lazio","Liguria","Lombardia","Marche","Molise","Piemonte","Puglia","Sardegna","Sicilia","Toscana","P.A. Trento","Umbria","Valle d'Aosta","Veneto"],"parents":["Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed","Confirmed"],"domain":{"column":0},"textinfo":"label+value+percent parent","name":"Confirmed","type":"treemap","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null},{"values":[48110,17916,49571,46111,114819,231637,89449,178569,67322,485134,76367,9164,210370,78399,34046,102403,178208,52039,46923,9833,439522],"labels":["Abruzzo","Basilicata","P.A. Bolzano","Calabria","Campania","Emilia-Romagna","Friuli Venezia Giulia","Lazio","Liguria","Lombardia","Marche","Molise","Piemonte","Puglia","Sardegna","Sicilia","Toscana","P.A. Trento","Umbria","Valle d'Aosta","Veneto"],"parents":["Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests","Total Tests"],"domain":{"column":1},"textinfo":"label+value+percent parent","name":"Total Tests","type":"treemap","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <p>More resources about the package available on the package <a href="https://github.com/Covid19R/covid19italy">site</a>.</p>
 </div>
 
@@ -383,6 +393,22 @@ add_trace(data = total_tests,
           </div>
           <div id="post-footer" class="post-footer main-content-wrap">
             
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">TAGGED IN</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="/tags/r/">R</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/covid19italy/">covid19italy</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/data/">data</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/dataviz/">dataviz</a>
+
+                  </div>
+                
               
             
             <div class="post-actions-wrap">
