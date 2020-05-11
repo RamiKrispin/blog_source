@@ -24,9 +24,18 @@ ts_seasonal(USgas, type = "all")
 ```
 
 
-
-
 More information available on the package [vignettes](https://ramikrispin.github.io/TSstudio/articles/).
+
+
+# forecastLM
+
+The [forecastLM](https://github.com/RamiKrispin/forecastLM) R package provides a framework for forecasting regular time-series data with linear regression models (based on the lm function). It supports both tsibble and ts objects as an input. More details available [here](https://ramikrispin.github.io/forecastLM/).
+
+
+
+# coronavirus <a href='https://RamiKrispin.github.io/coronavirus/'><img src='man/figures/coronavirus.png' align="right"  /></a>
+
+The [coronavirus](https://ramikrispin.github.io/coronavirus/) package provides a tidy format dataset of the 2019 Novel Coronavirus COVID-19 (2019-nCoV) epidemic. The raw data pulled from the Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) Coronavirus [repository](https://github.com/CSSEGISandData/COVID-19).
 
 # UKgrid
 
