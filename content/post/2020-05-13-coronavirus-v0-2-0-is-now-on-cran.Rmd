@@ -31,7 +31,7 @@ Below are the main updates for version 0.2.0:
 * Columns names - updating the geographic location fields with the changes in the raw data:
     - `Province.State` changed to `province` (US states removed from the raw data)
     - `Country.Region` changed to `country` 
-* The data on the [Github version](https://github.com/RamiKrispin/coronavirus) is automatically get updated on a daily basis with [Github Actions](https://github.com/RamiKrispin/coronavirus/blob/master/.github/workflows/data_refresh.yml)
+* The data on the Github version is automatically get updated on a daily basis with [Github Actions](https://github.com/RamiKrispin/coronavirus/blob/master/.github/workflows/data_refresh.yml)
 * `update_dataset` function- enables to update the installed version with new data that available on the Github version, more details below
 * The `covid_south_korea` and `covid_iran` that were avialble on the dev version were removed from the package and moved to new package [covid19wiki](https://github.com/RamiKrispin/covid19wiki), for now available only on Github 
 
