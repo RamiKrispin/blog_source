@@ -1,0 +1,172 @@
+---
+title: coronavirus v0.2.0 is now on CRAN
+author: Rami Krispin
+date: '2020-05-13'
+slug: coronavirus-v0-2-0-is-now-on-cran
+categories: ["covid19", "data", "coronavirus"]
+tags: ["R", "covid19italy", "data", "dataviz"]
+keywords:
+  - covid19
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+Version 0.2.0 of the [coronavirus](https://github.com/RamiKrispin/coronavirus) R data package was pushed today to CRAN. The **coronavirus** package provides a tidy format for Johns Hopkins University Center for Systems Science and Engineering (JHU CCSE) [Coronavirus dataset](https://github.com/CSSEGISandData/COVID-19). Version 0.2.0 catch up with the significant changes in the data that took place since the initial release on February 24, changing the package status from [experimental](https://www.tidyverse.org/lifecycle/#experimental) to [maturing](https://www.tidyverse.org/lifecycle/#maturing).
+
+Additional resources:
+
+* Github page - https://github.com/RamiKrispin/coronavirus
+* Package site available [here](https://ramikrispin.github.io/coronavirus/index.html), and vignettes available [here](https://ramikrispin.github.io/coronavirus/articles/)
+* Supporting dashboard available [here](https://ramikrispin.github.io/coronavirus_dashboard/), code available [here](https://github.com/RamiKrispin/coronavirus_dashboard)
+* CSV format of the dataset available [here](https://github.com/RamiKrispin/coronavirus/tree/master/csv)
+* Raw data available [here](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series)
+
+
+### Key changes and new features
+
+Below are the main updates for version 0.2.0:
+
+* Columns names - updating the geographic location fields with the changes in the raw data:
+    - `Province.State` changed to `province` (US states removed from the raw data)
+    - `Country.Region` changed to `country` 
+* The data on the [Github version](https://github.com/RamiKrispin/coronavirus) is automatically get updated on a daily basis with [Github Actions](https://github.com/RamiKrispin/coronavirus/blob/master/.github/workflows/data_refresh.yml)
+* `update_dataset` function- enables to update the installed version with new data that available on the Github version, more details below
+* The `covid_south_korea` and `covid_iran` that were avialble on the dev version were removed from the package and moved to new package [covid19wiki](https://github.com/RamiKrispin/covid19wiki), for now available only on Github 
+
+### Data structure
+
+The `coronavirus` dataset using long format and it has the following fields:
+
+  - `date` - The date of the summary
+  - `province` - The province or state, when applicable
+  - `country` - The country or region name
+  - `lat` - Latitude point
+  - `long` - Longitude point
+  - `type` - the type of case (i.e., confirmed, death)
+  - `cases` - the number of daily cases (corresponding to the case type)
+  
+```{r}
+library(coronavirus)
+
+head(coronavirus)
+```
+
+
+### Keep the data updated
+
+The **coronavirus** package provides data for an ongoing event that gets updated on a daily basis. In order to enable users to update the CRAN installed version with the most recent data available on the Github version, I created the `update_dataset` function. This function check if new data available on the Github version and update the package if needed:
+
+```{r}
+update_dataset(silence = TRUE)
+```
+
+The `silence` argument if TRUE, will automatically install updates without prompt question (default is `FALSE`). More details available on the following [vignette](https://ramikrispin.github.io/coronavirus/articles/update_dataset_function.html).
+
+In order to make the new data available, you will have to restart your R session.
+
+### summarising and visualizing
+
+Here are some examples for summarising and visualizing of the data with the use of the **dplyr**, **tidyr**, and **plotly** packages.
+
+```{r }
+library(dplyr)
+library(tidyr)
+library(plotly)
+```
+
+
+#### Cases summary
+
+We will start with grouping the dataset by case type and calculate the current worldwide total active cases, and the recovery and death rates:
+
+```{r}
+total_cases <- coronavirus %>% 
+  group_by(type) %>%
+  summarise(cases = sum(cases)) %>%
+  mutate(type = factor(type, levels = c("confirmed", "death", "recovered")))
+
+total_cases
+```
+
+The total active cases are the difference between the total confirmed cases and the total recovered and death cases:
+
+```{r}
+total_cases$cases[1] - total_cases$cases[2] - total_cases$cases[3]
+```
+
+The worldwide recovery rate is:
+
+```{r}
+round(100 * total_cases$cases[3] / total_cases$cases[1], 2)
+```
+
+And worldwide death rate is:
+
+```{r}
+round(100 * total_cases$cases[2] / total_cases$cases[1], 2)
+```
+
+The following plot presents the cases (active, recovered, and death) distribution over time:
+
+```{r}
+coronavirus %>% 
+  group_by(type, date) %>%
+  summarise(total_cases = sum(cases)) %>%
+  pivot_wider(names_from = type, values_from = total_cases) %>%
+  arrange(date) %>%
+  mutate(active = confirmed - death - recovered) %>%
+  mutate(active_total = cumsum(active),
+                recovered_total = cumsum(recovered),
+                death_total = cumsum(death)) %>%
+  plot_ly(x = ~ date,
+                  y = ~ active_total,
+                  name = 'Active', 
+                  fillcolor = '#1f77b4',
+                  type = 'scatter',
+                  mode = 'none', 
+                  stackgroup = 'one') %>%
+  add_trace(y = ~ death_total, 
+             name = "Death",
+             fillcolor = '#E41317') %>%
+  add_trace(y = ~recovered_total, 
+            name = 'Recovered', 
+            fillcolor = 'forestgreen') %>%
+  layout(title = "Distribution of Covid19 Cases Worldwide",
+         legend = list(x = 0.1, y = 0.9),
+         yaxis = list(title = "Number of Cases"),
+         xaxis = list(title = "Source: Johns Hopkins University Center for Systems Science and Engineering"))
+```
+
+
+#### Distribution of confirmed cases by country
+
+The next plot summarize the distribution of confrimed cases by country with the use of the treemap plot:
+
+```{r}
+conf_df <- coronavirus %>% 
+  filter(type == "confirmed") %>%
+  group_by(country) %>%
+  summarise(total_cases = sum(cases)) %>%
+  arrange(-total_cases) %>%
+  mutate(parents = "Confirmed") %>%
+  ungroup() 
+  
+  plot_ly(data = conf_df,
+          type= "treemap",
+          values = ~total_cases,
+          labels= ~ country,
+          parents=  ~parents,
+          domain = list(column=0),
+          name = "Confirmed",
+          textinfo="label+value+percent parent")
+```
+
+
+### Package contributers
+
+I would like to thank all the people that contributed to the package development and asked questions, report, and filed issues about issues with the data.
+
+A special thanks for Amanda Dobbyn (@dobbleobble) and Jarrett Byrnes (@jebyrnes) for their pull request and suggestion that lead for the kick of the [covid19R proejct](http://imachordata.com/2020/05/07/the-covid19r-project/), and to Mine Cetinkaya-Rundel (@minebocek) for providing a better format for the dataset documenation!
+
