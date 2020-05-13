@@ -3,7 +3,7 @@ title: coronavirus v0.2.0 is now on CRAN
 author: Rami Krispin
 date: '2020-05-13'
 slug: coronavirus-v0-2-0-is-now-on-cran
-categories: ["covid19", "data", "coronavirus"]
+categories: []
 tags: ["R", "covid19italy", "data", "dataviz"]
 keywords:
   - covid19
