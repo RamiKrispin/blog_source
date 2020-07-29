@@ -1,7 +1,7 @@
 ---
 title: covid19italy v0.3.0 is now on CRAN
 author: Rami Krispin
-date: '2020-07-26'
+date: '2020-07-29'
 slug: covid19italy-v0-3-0-is-now-on-cran
 categories: []
 tags: ["R", "covid19italy", "data", "dataviz"]
