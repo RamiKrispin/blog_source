@@ -1,0 +1,139 @@
+---
+title: covid19italy v0.3.0 is now on CRAN
+author: Rami Krispin
+date: '2020-07-26'
+slug: covid19italy-v0-3-0-is-now-on-cran
+categories: []
+tags: ["R", "covid19italy", "data", "dataviz"]
+keywords:
+  - covid19
+  - Italy
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+Version 0.3.0 of the [covid19italy](https://github.com/RamiKrispin/covid19Italy) is now available on CRAN. The package provides a daily snapshot of the covid19 cases in Italy by province, region and national levels. While the data on the package is getting refreshed once every few months, the `update_data` function enables you to get the most recent data available on the [Github](https://github.com/RamiKrispin/covid19italy) version (updated on a daily basis).
+
+Additional resources:
+
+* Github page - https://github.com/RamiKrispin/covid19italy
+* Package site available [here](https://ramikrispin.github.io/covid19Italy/), and vignettes available [here](https://ramikrispin.github.io/covid19Italy/articles)
+* Supporting dashboard available [here](https://ramikrispin.github.io/italy_dash/), code available [here](https://github.com/RamiKrispin/italy_dash)
+* CSV format of the dataset available [here](https://github.com/RamiKrispin/covid19italy/tree/master/csv)
+* Data source - [Italy Department of Civil Protection](http://www.protezionecivile.it/)
+
+
+## Key changes
+
+The main updates in v0.3.0 related to changes in the data structure:
+
+* Updates for the `italy_total` dataset:
+  * Added `positive_clinical_activity` - positive cases emerged from clinical activity
+  * Added `positive_surveys_tests` - positive cases emerging from surveys and tests planned at the national level
+* Updates for the `italy_region` dataset:
+  * Added `positive_clinical_activity` - positive cases emerged from clinical activity
+  * Added `positive_surveys_tests` - positive cases emerging from surveys and tests planned at the regional level
+
+In addition, updates of the CI/CD of the package data refresh automation:
+
+* Updated the data refresh automation - set a [docker image](https://hub.docker.com/r/rkrispin/covid19italy) to support the data refresh automation with [Github Actions](https://github.com/RamiKrispin/covid19Italy/blob/master/.github/workflows/data_refresh_docker.yml) 
+* Set a CI/CD for the package supporting [dashboard](https://ramikrispin.github.io/italy_dash/) with [Docker](https://hub.docker.com/r/rkrispin/covid19italy) and [Github Actions](https://github.com/RamiKrispin/italy_dash/blob/master/.github/workflows/dashboard_refresh_docker.yml)
+
+## Refresh the data
+
+As the data on the Github version is getting updated on a daily basis, the `update_data` function enables to keep the data updated on the installed version. The function compared the data available on the installed version with the ones on the Github version, when new data is available, it will reinstall the package from Github. For example:
+
+``` r
+library(covid19italy)
+
+data("italy_total")
+
+max(italy_total$date)
+
+[1] "2020-07-20"
+
+update_data()
+Updates are available on the covid19italy Dev version, do you want to update? n/Y y
+
+These packages have more recent versions available.
+
+The data was refresed, please restart your session to have the new data available
+```
+
+After restarting the R session, the new data is available for use:
+
+```{r}
+library(covid19italy)
+
+data("italy_total")
+
+max(italy_total$date)
+```
+
+## Visualize the distribution of the cases
+
+The `italy_total` dataset provides a snapshot for the national daily cases distribution. That includes:
+
+* Overall cases distribution:
+  * Active 
+  * Recovered
+  * Death
+* Active cases distribution:
+  * Intensive care
+  * Hospitalized with symptoms
+  * Home Confinement
+  
+In the following examples, we will use **plotly** to visualize those distributions over time. Start with the general distribution of the cases:
+
+```{r}
+library(plotly)
+
+plot_ly(data = italy_total,
+        x = ~ date,
+        y = ~ cumulative_positive_cases, 
+        name = 'Active', 
+        fillcolor = '#1f77b4',
+        type = 'scatter',
+        mode = 'none', 
+        stackgroup = 'one') %>%
+  add_trace( y = ~ death, 
+             name = "Death",
+             fillcolor = '#E41317') %>%
+  add_trace(y = ~recovered, 
+            name = 'Recovered', 
+            fillcolor = 'forestgreen') %>%
+  layout(title = "Italy - Distribution of Covid19 Cases",
+         legend = list(x = 0.1, y = 0.9),
+         yaxis = list(title = "Number of Cases"),
+         xaxis = list(title = "Source: Italy Department of Civil Protection"))
+
+```
+
+And below is the distribution of the active cases:
+
+```{r }
+plot_ly(data = italy_total,
+        x = ~ date,
+        y = ~home_confinement, 
+        name = 'Home Confinement', 
+        fillcolor = '#FDBBBC',
+        type = 'scatter',
+        mode = 'none', 
+        stackgroup = 'one') %>%
+  add_trace( y = ~ hospitalized_with_symptoms, 
+             name = "Hospitalized with Symptoms",
+             fillcolor = '#E41317') %>%
+  add_trace(y = ~intensive_care, 
+                name = 'Intensive Care', 
+                fillcolor = '#9E0003') %>%
+  layout(title = "Italy - Distribution of Active Covid19 Cases",
+         legend = list(x = 0.8, y = 0.9),
+         yaxis = list(title = "Number of Cases"),
+         xaxis = list(title = "Source: Italy Department of Civil Protection"))
+```
+
+## Roadmap
+
+The main goal for the next CRAN version release is to adopt the [Covid19R](https://github.com/Covid19R) project [data format standard](https://covid19r.github.io/documentation/data-format-standard.html) and add it to the [covid19r](https://github.com/Covid19R/covid19R) package.
