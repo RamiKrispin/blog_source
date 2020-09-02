@@ -1,0 +1,34 @@
+---
+title: Deploying flexdashboard on Github Pages
+author: Rami Krispin
+date: '2020-09-02'
+slug: embed-flexdashboard-on-pkgdown-site
+categories: ["rmarkdown"]
+tags: ["R", "github", "flexdashboard", "rmarkdown"]
+keywords:
+  - pkgdown
+  - flexdashboard
+---
+
+
+
+<!--more-->
+<p>One of Github’s coolest features is Github Pages, which enables you to create and deploy websites under github.com domain for free. The most common usage of Github Pages is the deployment of project documentation. The R community is widely using it to deploy different R Markdown formats such as package documentation with pkgdown, blogs with blogdown, books with bookdown, etc. Recently, as I was looking for a way to share Covid19 data, I had this eureka moment realizing that it should be straightforward to deploy flexdashboard or any other format of R Markdown (none Shiny) on Github Pages. After a short googling, I come across this <a href="https://github.com/pbatey/flexdashboard-example">example</a> by Phil Batey, I started to utlized this feature in some of my packages. Here are some use cases of such dashboards:</p>
+<ul>
+<li>The coronavirus dashboard, tracking worldwide covid19 cases</li>
+<li>Covid19 Italy dashboard, tracking covid19 cases in Italy</li>
+<li>US Wildfire dashboard, tracking the ongoing wildfire in the US</li>
+</ul>
+<div id="flexdashboard-on-github-pages" class="section level3">
+<h3>Flexdashboard on Github Pages</h3>
+<p>The flexdashboard package provides a customized format for building interactive dashboards. It is a simplistic, useful, and fast method for developing a static dashboard that does not require a big data or back-end server (although you can use flexdashboard with Shiny to create a dynamic dashboard with back-end server support). To deploy flexdashboard on Github Pages, you will need:</p>
+<ul>
+<li>Github repository</li>
+<li>flexdashboard R Markdown file</li>
+<li><code>_site.yml</code> file</li>
+</ul>
+</div>
+<div id="simple-example" class="section level3">
+<h3>Simple example</h3>
+<p>The first step</p>
+</div>

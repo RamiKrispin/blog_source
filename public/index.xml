@@ -11,18 +11,58 @@
 14    
 15    
 16    <item>
-17      <title>Embed Flexdashboard on pkgdown Site</title>
-18      <link>/2020/08/embed-flexdashboard-on-pkgdown-site/</link>
-19      <pubDate>Sun, 02 Aug 2020 00:00:00 +0000</pubDate>
+17      <title>Deploying flexdashboard on Github Pages</title>
+18      <link>/2020/09/embed-flexdashboard-on-pkgdown-site/</link>
+19      <pubDate>Wed, 02 Sep 2020 00:00:00 +0000</pubDate>
 20      
-21      <guid>/2020/08/embed-flexdashboard-on-pkgdown-site/</guid>
-22      <description>
-
-
-
-
-HUGOMORE42
-
+21      <guid>/2020/09/embed-flexdashboard-on-pkgdown-site/</guid>
+22      <description>&lt;p&gt;One of Github’s coolest features is Github Pages, which enables you to create and deploy websites under github.com domain for free. The most common usage of Github Pages is the deployment of project documentation. The R community is widely using it to deploy different R Markdown formats such as package documentation with pkgdown, blogs with blogdown, books with bookdown, etc. Recently, as I was looking for a way to share Covid19 data, I had this eureka moment realizing that it should be straightforward to deploy flexdashboard or any other format of R Markdown (none Shiny) on Github Pages. After a short googling, I come across this &lt;a href=&#34;https://github.com/pbatey/flexdashboard-example&#34;&gt;example&lt;/a&gt; by Phil Batey, I started to utlized this feature in some of my packages. Here are some use cases of such dashboards:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The coronavirus dashboard, tracking worldwide covid19 cases&lt;/li&gt;
+&lt;li&gt;Covid19 Italy dashboard, tracking covid19 cases in Italy&lt;/li&gt;
+&lt;li&gt;US Wildfire dashboard, tracking the ongoing wildfire in the US&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div id=&#34;flexdashboard-on-github-pages&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Flexdashboard on Github Pages&lt;/h3&gt;
+&lt;p&gt;The flexdashboard package provides a customized format for building interactive dashboards. It is a simplistic, useful, and fast method for developing a static dashboard that does not require a big data or back-end server (although you can use flexdashboard with Shiny to create a dynamic dashboard with back-end server support). To deploy flexdashboard on Github Pages, you will need:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Github repository&lt;/li&gt;
+&lt;li&gt;flexdashboard R Markdown file&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;_site.yml&lt;/code&gt; file&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;simple-example&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Simple example&lt;/h3&gt;
+&lt;p&gt;The first step&lt;/p&gt;
+&lt;/div&gt;
+</description>
+23    </item>
+24    
+16    <item>
+17      <title>Deploying flexdashboard on Github Pages</title>
+18      <link>/2020/09/embed-flexdashboard-on-pkgdown-site/</link>
+19      <pubDate>Wed, 02 Sep 2020 00:00:00 +0000</pubDate>
+20      
+21      <guid>/2020/09/embed-flexdashboard-on-pkgdown-site/</guid>
+22      <description>&lt;p&gt;One of Github’s coolest features is Github Pages, which enables you to create and deploy websites under github.com domain for free. The most common usage of Github Pages is the deployment of project documentation. The R community is widely using it to deploy different R Markdown formats such as package documentation with pkgdown, blogs with blogdown, books with bookdown, etc. Recently, as I was looking for a way to share Covid19 data, I had this eureka moment realizing that it should be straightforward to deploy flexdashboard or any other format of R Markdown (none Shiny) on Github Pages. After a short googling, I come across this &lt;a href=&#34;https://github.com/pbatey/flexdashboard-example&#34;&gt;example&lt;/a&gt; by Phil Batey, I started to utlized this feature in some of my packages. Here are some use cases of such dashboards:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The coronavirus dashboard, tracking worldwide covid19 cases&lt;/li&gt;
+&lt;li&gt;Covid19 Italy dashboard, tracking covid19 cases in Italy&lt;/li&gt;
+&lt;li&gt;US Wildfire dashboard, tracking the ongoing wildfire in the US&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div id=&#34;flexdashboard-on-github-pages&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Flexdashboard on Github Pages&lt;/h3&gt;
+&lt;p&gt;The flexdashboard package provides a customized format for building interactive dashboards. It is a simplistic, useful, and fast method for developing a static dashboard that does not require a big data or back-end server (although you can use flexdashboard with Shiny to create a dynamic dashboard with back-end server support). To deploy flexdashboard on Github Pages, you will need:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Github repository&lt;/li&gt;
+&lt;li&gt;flexdashboard R Markdown file&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;_site.yml&lt;/code&gt; file&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;simple-example&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Simple example&lt;/h3&gt;
+&lt;p&gt;The first step&lt;/p&gt;
+&lt;/div&gt;
 </description>
 23    </item>
 24    

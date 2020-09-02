@@ -19,10 +19,10 @@
 
 ">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Embed Flexdashboard on pkgdown Site">
-<meta name="twitter:title" content="Embed Flexdashboard on pkgdown Site">
-<meta property="og:url" content="/2020/08/embed-flexdashboard-on-pkgdown-site/">
-<meta property="twitter:url" content="/2020/08/embed-flexdashboard-on-pkgdown-site/">
+<meta property="og:title" content="Deploying flexdashboard on Github Pages">
+<meta name="twitter:title" content="Deploying flexdashboard on Github Pages">
+<meta property="og:url" content="/2020/09/embed-flexdashboard-on-pkgdown-site/">
+<meta property="twitter:url" content="/2020/09/embed-flexdashboard-on-pkgdown-site/">
 <meta property="og:site_name" content="Rami Krispin">
 <meta property="og:description" content="
 
@@ -35,10 +35,10 @@
 <meta property="og:locale" content="en-us">
 
   
-    <meta property="article:published_time" content="2020-08-02T00:00:00">
+    <meta property="article:published_time" content="2020-09-02T00:00:00">
   
   
-    <meta property="article:modified_time" content="2020-08-02T00:00:00">
+    <meta property="article:modified_time" content="2020-09-02T00:00:00">
   
   
   
@@ -50,7 +50,7 @@
     
       <meta property="article:tag" content="R">
     
-      <meta property="article:tag" content="pkgdown">
+      <meta property="article:tag" content="github">
     
       <meta property="article:tag" content="flexdashboard">
     
@@ -79,14 +79,14 @@
   <meta property="twitter:image" content="https://avatars0.githubusercontent.com/u/12760966?s=400&u=654c914d9df714991b890ea38ac4fce0e55c0d8f&v=4">
 
 
-    <title>Embed Flexdashboard on pkgdown Site</title>
+    <title>Deploying flexdashboard on Github Pages</title>
 
     <link rel="icon" href="/favicon.png">
     
 
     
 
-    <link rel="canonical" href="/2020/08/embed-flexdashboard-on-pkgdown-site/">
+    <link rel="canonical" href="/2020/09/embed-flexdashboard-on-pkgdown-site/">
 
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
@@ -273,15 +273,15 @@ if (!doNotTrack) {
             <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      Embed Flexdashboard on pkgdown Site
+      Deploying flexdashboard on Github Pages
     </h1>
   
   
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2020-08-02T00:00:00Z">
+      <time itemprop="datePublished" datetime="2020-09-02T00:00:00Z">
         
-  August 2, 2020
+  September 2, 2020
 
       </time>
     
@@ -300,9 +300,25 @@ if (!doNotTrack) {
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <pre class="r"><code>knitr::include_app(&quot;https://ramikrispin.github.io/uswildfire&quot;, height = &quot;500px&quot;)</code></pre>
-<iframe src="https://ramikrispin.github.io/uswildfire?showcase=0" width="672" height="500px">
-</iframe>
+              <p>One of Github’s coolest features is Github Pages, which enables you to create and deploy websites under github.com domain for free. The most common usage of Github Pages is the deployment of project documentation. The R community is widely using it to deploy different R Markdown formats such as package documentation with pkgdown, blogs with blogdown, books with bookdown, etc. Recently, as I was looking for a way to share Covid19 data, I had this eureka moment realizing that it should be straightforward to deploy flexdashboard or any other format of R Markdown (none Shiny) on Github Pages. After a short googling, I come across this <a href="https://github.com/pbatey/flexdashboard-example">example</a> by Phil Batey, I started to utlized this feature in some of my packages. Here are some use cases of such dashboards:</p>
+<ul>
+<li>The coronavirus dashboard, tracking worldwide covid19 cases</li>
+<li>Covid19 Italy dashboard, tracking covid19 cases in Italy</li>
+<li>US Wildfire dashboard, tracking the ongoing wildfire in the US</li>
+</ul>
+<div id="flexdashboard-on-github-pages" class="section level3">
+<h3>Flexdashboard on Github Pages</h3>
+<p>The flexdashboard package provides a customized format for building interactive dashboards. It is a simplistic, useful, and fast method for developing a static dashboard that does not require a big data or back-end server (although you can use flexdashboard with Shiny to create a dynamic dashboard with back-end server support). To deploy flexdashboard on Github Pages, you will need:</p>
+<ul>
+<li>Github repository</li>
+<li>flexdashboard R Markdown file</li>
+<li><code>_site.yml</code> file</li>
+</ul>
+</div>
+<div id="simple-example" class="section level3">
+<h3>Simple example</h3>
+<p>The first step</p>
+</div>
 
               
             </div>
@@ -317,7 +333,7 @@ if (!doNotTrack) {
                     
   <a class="tag tag--primary tag--small" href="/tags/r/">R</a>
 
-  <a class="tag tag--primary tag--small" href="/tags/pkgdown/">pkgdown</a>
+  <a class="tag tag--primary tag--small" href="/tags/github/">github</a>
 
   <a class="tag tag--primary tag--small" href="/tags/flexdashboard/">flexdashboard</a>
 
@@ -334,7 +350,7 @@ if (!doNotTrack) {
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--disabled">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2020/09/embed-flexdashboard-on-pkgdown-site/" data-tooltip="Deploying flexdashboard on Github Pages">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -360,19 +376,19 @@ if (!doNotTrack) {
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2020/08/embed-flexdashboard-on-pkgdown-site/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2020/09/embed-flexdashboard-on-pkgdown-site/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2020/08/embed-flexdashboard-on-pkgdown-site/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2020/09/embed-flexdashboard-on-pkgdown-site/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2020/08/embed-flexdashboard-on-pkgdown-site/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2020/09/embed-flexdashboard-on-pkgdown-site/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -420,7 +436,7 @@ if (!doNotTrack) {
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--disabled">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2020/09/embed-flexdashboard-on-pkgdown-site/" data-tooltip="Deploying flexdashboard on Github Pages">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -446,19 +462,19 @@ if (!doNotTrack) {
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2020/08/embed-flexdashboard-on-pkgdown-site/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2020/09/embed-flexdashboard-on-pkgdown-site/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2020/08/embed-flexdashboard-on-pkgdown-site/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2020/09/embed-flexdashboard-on-pkgdown-site/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2020/08/embed-flexdashboard-on-pkgdown-site/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=/2020/09/embed-flexdashboard-on-pkgdown-site/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -488,19 +504,19 @@ if (!doNotTrack) {
   <ul class="share-options">
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2020%2F08%2Fembed-flexdashboard-on-pkgdown-site%2F">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2020%2F09%2Fembed-flexdashboard-on-pkgdown-site%2F">
           <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2020%2F08%2Fembed-flexdashboard-on-pkgdown-site%2F">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2020%2F09%2Fembed-flexdashboard-on-pkgdown-site%2F">
           <i class="fa fa-twitter"></i><span>Share on Twitter</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2020%2F08%2Fembed-flexdashboard-on-pkgdown-site%2F">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=%2F2020%2F09%2Fembed-flexdashboard-on-pkgdown-site%2F">
           <i class="fa fa-google-plus"></i><span>Share on Google&#43;</span>
         </a>
       </li>
@@ -592,9 +608,9 @@ $(document).ready(function() {
     
       <script>
         var disqus_config = function () {
-          this.page.url = '\/2020\/08\/embed-flexdashboard-on-pkgdown-site\/';
+          this.page.url = '\/2020\/09\/embed-flexdashboard-on-pkgdown-site\/';
           
-            this.page.identifier = '\/2020\/08\/embed-flexdashboard-on-pkgdown-site\/'
+            this.page.identifier = '\/2020\/09\/embed-flexdashboard-on-pkgdown-site\/'
           
         };
         (function() {
