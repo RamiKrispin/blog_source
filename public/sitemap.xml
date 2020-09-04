@@ -3,48 +3,38 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/categories/</loc>
-    <lastmod>2020-09-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/2020/09/embed-flexdashboard-on-pkgdown-site/</loc>
-    <lastmod>2020-09-02T00:00:00+00:00</lastmod>
+    <loc>/2020/09/deploying-flexdashboard-on-github-pages/</loc>
+    <lastmod>2020-09-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/flexdashboard/</loc>
-    <lastmod>2020-09-02T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/github/</loc>
-    <lastmod>2020-09-02T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2020-09-02T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/r/</loc>
-    <lastmod>2020-09-02T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/rmarkdown/</loc>
-    <lastmod>2020-09-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/rmarkdown/</loc>
-    <lastmod>2020-09-02T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2020-09-02T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -100,6 +90,11 @@
   <url>
     <loc>/tags/trainlm/</loc>
     <lastmod>2020-02-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+    <lastmod>2019-12-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>

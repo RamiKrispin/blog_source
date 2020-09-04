@@ -12,10 +12,10 @@
 15    
 16    <item>
 17      <title>Deploying flexdashboard on Github Pages</title>
-18      <link>/2020/09/embed-flexdashboard-on-pkgdown-site/</link>
-19      <pubDate>Wed, 02 Sep 2020 00:00:00 +0000</pubDate>
+18      <link>/2020/09/deploying-flexdashboard-on-github-pages/</link>
+19      <pubDate>Thu, 03 Sep 2020 00:00:00 +0000</pubDate>
 20      
-21      <guid>/2020/09/embed-flexdashboard-on-pkgdown-site/</guid>
+21      <guid>/2020/09/deploying-flexdashboard-on-github-pages/</guid>
 22      <description>&lt;p&gt;One of Github’s coolest features is &lt;a href=&#34;https://pages.github.com/&#34;&gt;Github Pages&lt;/a&gt;, which enables you to create and deploy websites under github.com domain for free. The most common usage of Github Pages is the deployment of project documentation. The R community is widely using it to deploy different &lt;a href=&#34;https://rmarkdown.rstudio.com/&#34;&gt;R Markdown&lt;/a&gt; formats such as package documentation with &lt;a href=&#34;https://pkgdown.r-lib.org/&#34;&gt;pkgdown&lt;/a&gt;, blogs with &lt;a href=&#34;https://bookdown.org/yihui/blogdown/&#34;&gt;blogdown&lt;/a&gt;, books with &lt;a href=&#34;https://bookdown.org/&#34;&gt;bookdown&lt;/a&gt;, etc. Recently, as I was looking for a way to share Covid19 data, I had this eureka moment realizing that it should be straightforward to deploy &lt;a href=&#34;https://rmarkdown.rstudio.com/flexdashboard/&#34;&gt;flexdashboard&lt;/a&gt; or any other format of R Markdown (none Shiny) on Github Pages. After a short googling, I come across this &lt;a href=&#34;https://github.com/pbatey/flexdashboard-example&#34;&gt;example&lt;/a&gt; by Phil Batey. Since then, I started to utlized this feature in some of my packages (visualizing Covid19 datasets). Here are some use cases of such dashboards:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;The &lt;a href=&#34;https://ramikrispin.github.io/coronavirus_dashboard/&#34;&gt;coronavirus dashboard&lt;/a&gt;, supporting the &lt;a href=&#34;https://github.com/RamiKrispin/coronavirus&#34;&gt;coronavirus&lt;/a&gt; package&lt;/li&gt;
@@ -66,8 +66,9 @@ git remote add origin git@github.com:RamiKrispin/flexdashboard_example.git
 git push -u origin master&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Now, if all went well, you should see the content of the local folder on the Github repository. The last step would be to set the Github Page. Go to the repository &lt;code&gt;settings&lt;/code&gt; -&amp;gt; &lt;code&gt;options&lt;/code&gt; -&amp;gt; &lt;code&gt;Github Pages&lt;/code&gt; and set the page source by selecting the &lt;code&gt;master&lt;/code&gt; branch and the &lt;code&gt;docs&lt;/code&gt; folder, and save the changes. Once saved, you should get the deployed Github Page URL on top:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-09-02-deploy-flexdashboard-on-github-pages_files/github%20pages.png&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;And… it is deployed!&lt;/p&gt;
+&lt;p&gt;And… it deployed!&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://ramikrispin.github.io/flexdashboard_example/&#34; class=&#34;uri&#34;&gt;https://ramikrispin.github.io/flexdashboard_example/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-09-02-deploy-flexdashboard-on-github-pages_files/dashboard.png&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 </description>
 23    </item>
