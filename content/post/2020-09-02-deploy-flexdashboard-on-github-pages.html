@@ -13,11 +13,11 @@ keywords:
 
 
 <!--more-->
-<p>One of Github’s coolest features is Github Pages, which enables you to create and deploy websites under github.com domain for free. The most common usage of Github Pages is the deployment of project documentation. The R community is widely using it to deploy different R Markdown formats such as package documentation with pkgdown, blogs with blogdown, books with bookdown, etc. Recently, as I was looking for a way to share Covid19 data, I had this eureka moment realizing that it should be straightforward to deploy flexdashboard or any other format of R Markdown (none Shiny) on Github Pages. After a short googling, I come across this <a href="https://github.com/pbatey/flexdashboard-example">example</a> by Phil Batey, I started to utlized this feature in some of my packages. Here are some use cases of such dashboards:</p>
+<p>One of Github’s coolest features is <a href="https://pages.github.com/">Github Pages</a>, which enables you to create and deploy websites under github.com domain for free. The most common usage of Github Pages is the deployment of project documentation. The R community is widely using it to deploy different <a href="https://rmarkdown.rstudio.com/">R Markdown</a> formats such as package documentation with <a href="https://pkgdown.r-lib.org/">pkgdown</a>, blogs with <a href="https://bookdown.org/yihui/blogdown/">blogdown</a>, books with <a href="https://bookdown.org/">bookdown</a>, etc. Recently, as I was looking for a way to share Covid19 data, I had this eureka moment realizing that it should be straightforward to deploy <a href="https://rmarkdown.rstudio.com/flexdashboard/">flexdashboard</a> or any other format of R Markdown (none Shiny) on Github Pages. After a short googling, I come across this <a href="https://github.com/pbatey/flexdashboard-example">example</a> by Phil Batey. Since then, I started to utlized this feature in some of my packages (visualizing Covid19 datasets). Here are some use cases of such dashboards:</p>
 <ul>
-<li>The coronavirus dashboard, tracking worldwide covid19 cases</li>
-<li>Covid19 Italy dashboard, tracking covid19 cases in Italy</li>
-<li>US Wildfire dashboard, tracking the ongoing wildfire in the US</li>
+<li>The <a href="https://ramikrispin.github.io/coronavirus_dashboard/">coronavirus dashboard</a>, supporting the <a href="https://github.com/RamiKrispin/coronavirus">coronavirus</a> package</li>
+<li><a href="https://github.com/RamiKrispin/italy_dash">Covid19 Italy</a> dashboard, supporting the <a href="https://github.com/RamiKrispin/covid19italy">covid19italy</a> package</li>
+<li><a href="https://ramikrispin.github.io/uswildfire/">US Wildfire</a> dashboard, tracking the ongoing wildfire in the US</li>
 </ul>
 <div id="flexdashboard-on-github-pages" class="section level3">
 <h3>Flexdashboard on Github Pages</h3>
@@ -30,5 +30,39 @@ keywords:
 </div>
 <div id="simple-example" class="section level3">
 <h3>Simple example</h3>
-<p>The first step</p>
+<p>The following example demonstrated the deployment process of flexdashboard on Github Pages. We will start by creating a new repository for the deployment (can also deploy on an existing repository as well) using the Github web interface:</p>
+<p><img src="/post/2020-09-02-deploy-flexdashboard-on-github-pages_files/new_repo.png" /></p>
+<p>Note that the repository must be public to expose it on a Github page. We will set the name, keep all the checkboxes unchecked, and create the repository.</p>
+<p>The next step is to create a local folder and sync it with the origin. There are few methods for doing it, such as local file manager (e.g., Finder on Mac, File Explorer on Windows, etc.), terminal (or command line), RStudio, etc. For simplicity, I will use RStudio by creating new project by following those steps:</p>
+<ul>
+<li>Clicking the <code>Project:</code> drop-down button on the top right (see the blue rectangle on the first screenshot)</li>
+<li>Select the <code>New Project…</code> option</li>
+<li>On the next screen (the below screenshot) select the first option <code>New Project</code></li>
+</ul>
+<p><img src="/post/2020-09-02-deploy-flexdashboard-on-github-pages_files/new_project.png" /></p>
+<ul>
+<li>Set the folder path and name, leave the checkboxes unchecked, and click the <code>create project</code> button</li>
+</ul>
+<p><img src="/post/2020-09-02-deploy-flexdashboard-on-github-pages_files/new_project_folder.png" /></p>
+<p>Before we sync the new folder with the <code>origin</code> on Github, let’s create the dashboard. We will start by creating the <code>_site.yml</code> file. The <code>_site.yml</code> is a setting file that enables us to configure the R Markdown file’s rendering options. Creating this file can be done by clicking on the top left menu <code>File</code> -&gt; <code>New File</code> -&gt; <code>Text File</code>, which will pop-up a new file on the source pane, and we will save it as <code>_site.yml</code> (more details available <a href="https://bookdown.org/yihui/rmarkdown/rmarkdown-site.html">here</a>). As typically, Github pages is rendering the website from the <code>docs</code> folder, we will set the R Markdown HTML output to the docs folder. Paste the following code and save it:</p>
+<pre class="bash"><code>name: &quot;flexdashboard-example&quot;
+output_dir: docs</code></pre>
+<p>Next, we will use the built-in template by selecting on Rstudio on the top left options <code>File</code> -&gt; <code>New File</code> -&gt; <code>R Markdown</code>. The <strong>New R Markdown</strong> window should pop-up, select the <code>From Template</code> option on the left, and then choose the <code>Flex Dashboard</code> template. Note that you probably won’t have this template available on this template menu if the <strong>flexdashboard</strong> package is not installed.</p>
+<p><img src="/post/2020-09-02-deploy-flexdashboard-on-github-pages_files/markdown%20temp.png" /></p>
+<p>Once creating the template, a new file will pop-up source pane named <code>Untitled1</code> (or <code>Untitiledn</code> if more un-named files are already opened). To run the dashboard as a website, we will name the file as <code>index.Rmd</code> (saving it on RStudio as <code>index</code> will automatically name it as <code>index.Rmd</code>), which will render it into <code>index.html</code> file. By default, the template comes with a layout of two empty columns (where the second column has two raws). For making this example more appealing, I will drop three interactive plots from the <strong>Plotly</strong> package documentation.</p>
+<p>Now we are ready to render the dashboard! Click on the <code>Knit</code> option (under the file name tab on the source pane), and this is the output you should expect:</p>
+<p><img src="/post/2020-09-02-deploy-flexdashboard-on-github-pages_files/render%20dash.png" /></p>
+<p>You can noticed on the screenshot above that the dashboard file name (on the dashboard top right) is <code>index.html</code> and <code>File</code> pane on the right that it create the <code>docs</code> folder.</p>
+<p>The last step of the deployment is to sync the local repo with the <code>origin</code> and set the website. To set the <code>git</code> you can use the repository details from Github to linked it with the local folder:</p>
+<p><img src="/post/2020-09-02-deploy-flexdashboard-on-github-pages_files/setting%20repo.png" /></p>
+<p>We will init a git work space on the local folder we created for the project, and commit the folder content by using the origin address from the red box above:</p>
+<pre class="bash"><code>git init
+git add *
+git commit -m &quot;init commit&quot;
+git remote add origin git@github.com:RamiKrispin/flexdashboard_example.git
+git push -u origin master</code></pre>
+<p>Now, if all went well, you should see the content of the local folder on the Github repository. The last step would be to set the Github Page. Go to the repository <code>settings</code> -&gt; <code>options</code> -&gt; <code>Github Pages</code> and set the page source by selecting the <code>master</code> branch and the <code>docs</code> folder, and save the changes. Once saved, you should get the deployed Github Page URL on top:</p>
+<p><img src="/post/2020-09-02-deploy-flexdashboard-on-github-pages_files/github%20pages.png" /></p>
+<p>And… it is deployed!</p>
+<p><a href="https://ramikrispin.github.io/flexdashboard_example/" class="uri">https://ramikrispin.github.io/flexdashboard_example/</a></p>
 </div>

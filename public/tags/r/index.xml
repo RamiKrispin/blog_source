@@ -24,18 +24,6 @@
     </item>
     
     <item>
-      <title>Deploying flexdashboard on Github Pages</title>
-      <link>/2020/09/embed-flexdashboard-on-pkgdown-site/</link>
-      <pubDate>Wed, 02 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/2020/09/embed-flexdashboard-on-pkgdown-site/</guid>
-      <description>
-
-
-</description>
-    </item>
-    
-    <item>
       <title>covid19italy v0.3.0 is now on CRAN</title>
       <link>/2020/07/covid19italy-v0-3-0-is-now-on-cran/</link>
       <pubDate>Wed, 29 Jul 2020 00:00:00 +0000</pubDate>
