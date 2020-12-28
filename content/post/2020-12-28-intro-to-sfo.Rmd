@@ -13,7 +13,7 @@ keywords:
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 ```
 
-Happy to announce (in s one month delay) a new package - [sfo](https://ramikrispin.github.io/sfo/index.html), which provides monthly statistics of the air passenger traffic at San Francisco International (SFO) airport. The package is available on [CRAN](https://cran.r-project.org/web/packages/sfo/index.html). 
+Happy to announce (in a one month delay) a new package - [sfo](https://ramikrispin.github.io/sfo/index.html), which provides monthly statistics of the air passenger traffic at San Francisco International (SFO) airport. The package is available on [CRAN](https://cran.r-project.org/web/packages/sfo/index.html). 
 
 Additional information available:
 
