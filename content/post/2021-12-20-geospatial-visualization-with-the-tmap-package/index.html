@@ -1,0 +1,348 @@
+---
+title: Introduction to Geospatial Visualization with the tmap package
+author: ''
+date: '2021-12-25'
+slug: geospatial-visualization-with-the-tmap-package
+categories:
+  - dataviz
+  - maps
+tags:
+  - dataviz
+  - maps
+  - R
+  - tmap
+keywords:
+  - R
+  - tmap
+  - dataviz
+  - covid19
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<!--more-->
+<p>The <a href="https://cran.r-project.org/web/packages/tmap/index.html">tmap</a> R package provides a set of tools and functions for creating thematic/chloroplasts maps. The package follows the ggplot2 syntax style, and it is fairly simple to work with. This tutorial focuses on In this tutorial we will cover:</p>
+<ul>
+<li>Plotting <code>sf</code> objects</li>
+<li>Color customization</li>
+<li>Setting titles and legends</li>
+<li>Plot attributes</li>
+</ul>
+<div id="libraries" class="section level4">
+<h4>Libraries</h4>
+<p>For this tutorial, we will use the following libraries:</p>
+<ul>
+<li><strong>tmap</strong> - tools and function for creating thematic maps</li>
+<li><strong>sf</strong> - supports for <code>sf</code> objects</li>
+<li><strong>covid19sf</strong> - daily summary of COVID-19 cases and vaccination status in San Francisco</li>
+<li><strong>dplyr</strong> - to manipulate and filter the data</li>
+</ul>
+<pre class="r"><code>library(tmap)
+library(sf)
+library(covid19sf)
+library(dplyr)</code></pre>
+</div>
+<div id="data-input" class="section level4">
+<h4>Data input</h4>
+<p>The <strong>tmap</strong> package supports objects from the <strong>sf</strong>, <strong>stars</strong>, <strong>sp</strong>, and <strong>raster</strong> packages. I generally find it easier to work with <code>sf</code> objects as it is a <code>data.frame</code> object with extra attributes (nested geometry data). Therefore, it is significantly easier and faster to manipulate <code>sf</code> objects with the use of <strong>dplyr</strong> and other applications.</p>
+<p>In the examples below, we will use the <code>covid19sf_vaccine_geo</code> dataset from the <a href="https://github.com/RamiKrispin/covid19sf">covid19sf</a> package. This dataset represents the COVID-19 vaccinations given to SF residents summarized by the geographic region of their residential address. This dataset is an <code>sf</code> object:</p>
+<pre class="r"><code>data(covid19sf_vaccine_geo)
+
+head(covid19sf_vaccine_geo)</code></pre>
+<pre><code>## Simple feature collection with 6 features and 8 fields
+## Geometry type: MULTIPOLYGON
+## Dimension:     XY
+## Bounding box:  xmin: -122.4773 ymin: 37.73155 xmax: -122.3843 ymax: 37.80602
+## Geodetic CRS:  WGS 84
+##                               id             area_type count_vaccinated_by_dph
+## 1                 Bernal Heights Analysis Neighborhood                    5106
+## 2 Financial District/South Beach Analysis Neighborhood                    1841
+## 3                      Glen Park Analysis Neighborhood                     573
+## 4                 Haight Ashbury Analysis Neighborhood                     823
+## 5                   Hayes Valley Analysis Neighborhood                    2401
+## 6                   Inner Sunset Analysis Neighborhood                    1220
+##   count_vaccinated count_series_completed acs_population
+## 1            21109                  19781          25167
+## 2            22782                  20215          21537
+## 3             7257                   6804           8651
+## 4            14360                  13279          19275
+## 5            16351                  14930          19711
+## 6            23414                  21829          29539
+##   percent_pop_series_completed        last_updated
+## 1                    0.7859896 2021-12-15 04:45:07
+## 2                    0.9386173 2021-12-15 04:45:09
+## 3                    0.7864987 2021-12-15 04:45:09
+## 4                    0.6889235 2021-12-15 04:45:09
+## 5                    0.7574451 2021-12-15 04:45:09
+## 6                    0.7389891 2021-12-15 04:45:09
+##                         geometry
+## 1 MULTIPOLYGON (((-122.4036 3...
+## 2 MULTIPOLYGON (((-122.3875 3...
+## 3 MULTIPOLYGON (((-122.4474 3...
+## 4 MULTIPOLYGON (((-122.432 37...
+## 5 MULTIPOLYGON (((-122.4208 3...
+## 6 MULTIPOLYGON (((-122.4529 3...</code></pre>
+<p>The dataset includes the following fields:</p>
+<ul>
+<li><code>id</code> - Area id</li>
+<li><code>area_type</code> - Area type, c(“Analysis Neighborhood”, “Summary”)</li>
+<li><code>count_vaccinated_by_dph</code> - Count of residents in the given geographic region who has received at least one dose administered by DPH</li>
+<li><code>count_vaccinated</code> - Count of residents in the given geographic region who has received at least one dose regardless of who administered the vaccine</li>
+<li><code>count_series_completed</code> - Count of residents in the given geographic region who has completed a vaccine series</li>
+<li><code>acs_population</code> - 2019 5-year American Community Survey population estimate for the given geographic region (all ages)</li>
+<li><code>percent_pop_series_completed</code> - The total count of population that has completed a vaccine series by population estimate (acs_population)</li>
+<li><code>last_updated</code> - Last update of the data in POSIXc format)</li>
+<li><code>geometry</code> - The area polygon data</li>
+</ul>
+<p>In the examples below, we will plot the percentage of San Francisco’s fully vaccinated population by neighborhood. The dataset contains both neighborhood and summary data. Therefore, before starting, we will filter the data by the neighborhood level and remove the summary data:</p>
+<pre class="r"><code>df &lt;- covid19sf_vaccine_geo %&gt;% filter(area_type == &quot;Analysis Neighborhood&quot;) %&gt;%
+  mutate(perc_complated = percent_pop_series_completed * 100)</code></pre>
+<p><strong>Note:</strong> We created the <code>perc_complated</code> variable, a transformation of the <code>percent_pop_series_completed</code> variable from decimal to percentage format.</p>
+</div>
+<div id="basic-map" class="section level4">
+<h4>Basic map</h4>
+<p>Before starting, following changes in the default options of the sf package from version <code>1.0-1</code> by default option is to use s2 spherical geometry as default when coordinates are ellipsoidal. That cause some issues with the <strong>tmap</strong> package, therefore we will set this functionality as <code>FALSE</code>:</p>
+<pre class="r"><code>sf_use_s2(FALSE)</code></pre>
+<pre><code>## Spherical geometry (s2) switched off</code></pre>
+<p>We will start with basic plot of the percentage of vaccinated population in San Francisco. The <code>tm_shape</code> function specifies the shape object and the <code>tm_polygons</code> function defines draw the polygons and variable to fill the color:</p>
+<pre class="r"><code>tm_shape(df) + 
+  tm_polygons(col = &quot;perc_complated&quot;,
+              title = &quot;% Group&quot;)</code></pre>
+<p><img src="staticunnamed-chunk-5-1.png" width="576" /></p>
+<p>By default, the tm_polygons function bucket the numeric variable, in this case percentage of vaccinated population, into buckets tens. You can control the number of buckets using the <code>n</code> argument, for example, setting 10 buckets:</p>
+<pre class="r"><code>tm_shape(df) + 
+  tm_polygons(&quot;perc_complated&quot;,
+              n = 10,
+              title = &quot;% Group&quot;)  </code></pre>
+<p><img src="staticunnamed-chunk-6-1.png" width="576" /></p>
+</div>
+<div id="color-setting" class="section level4">
+<h4>Color setting</h4>
+<p>Let’s now starts to modify the plot colors. The <code>palette</code> argument on <code>tm_polygons</code> function enables you to define the map fill color palette. For example, we will use the <code>RdYlBu</code> from the <strong>RColorBrewer</strong> package:</p>
+<pre class="r"><code>tm_shape(df) + 
+  tm_polygons(&quot;perc_complated&quot;,
+              palette = &quot;RdYlBu&quot;,
+              title = &quot;% Group&quot;)  </code></pre>
+<p><img src="staticunnamed-chunk-7-1.png" width="576" /></p>
+<p>The <code>tm_layout</code> function enables to set and modify the plot main elements such as title, margins, aspect ratio, colors, frame, legend, etc. In the following example we will modify the previous plot and set the background to black using the <code>bg.color</code> argument. Since the default text color is black, we will modify the legend title color to white with the <code>attr.color</code> argument:</p>
+<pre class="r"><code>tm_shape(df) + 
+  tm_polygons(&quot;perc_complated&quot;,
+              palette = &quot;RdYlBu&quot;,
+              title = &quot;% Group&quot;) +
+  tm_layout(bg.color = &quot;black&quot;,
+            attr.color = &quot;white&quot;)</code></pre>
+<p><img src="staticunnamed-chunk-8-1.png" width="576" /></p>
+<p>The <code>tm_style</code> function provides a predefined styles. That includes the following styles:</p>
+<ul>
+<li><code>white</code> - White background, commonly used colors (default)</li>
+<li><code>gray</code>/<code>grey</code> - Grey background, useful to highlight sequential palettes (e.g. in choropleths)</li>
+<li><code>natural</code> - Emulation of natural view: blue waters and green land</li>
+<li><code>bw</code> - Greyscale, obviously useful for greyscale printing</li>
+<li><code>classic</code> - Classic styled maps (recommended)</li>
+<li><code>cobalt</code> - Inspired by latex beamer style cobalt</li>
+<li><code>albatross</code> - Inspired by latex beamer style albatross</li>
+<li><code>beaver</code> - Inspired by latex beamer style beaver</li>
+</ul>
+<p>For example, let’s use the <code>cobalt</code> style:</p>
+<pre class="r"><code>tm_shape(df) + 
+  tm_polygons(&quot;perc_complated&quot;,
+              palette = &quot;RdYlBu&quot;,
+              title = &quot;% Group&quot;) +
+  tm_style(&quot;cobalt&quot;)</code></pre>
+<p><img src="staticunnamed-chunk-9-1.png" width="576" /></p>
+</div>
+<div id="titles-and-legends" class="section level4">
+<h4>Titles and legends</h4>
+<p>After we set the color theme it is time to set the plot title and customize the legend with the <code>tm_layout</code> function. We will set the plot title with the <code>title</code> argument (not to confuse with the <code>title</code> argument of the <code>tm_polygons</code> function:</p>
+<pre class="r"><code>tm_shape(df) + 
+  tm_polygons(&quot;perc_complated&quot;,
+              palette = &quot;RdYlBu&quot;,
+              title = &quot;% Group&quot;) +
+  tm_style(&quot;cobalt&quot;) +
+  tm_layout(title = &quot;COVID-19 Vaccines Given to San Franciscans by Geography&quot;)</code></pre>
+<p><img src="staticunnamed-chunk-10-1.png" width="576" /></p>
+<p><strong>Note:</strong> You can customize the title position with the <code>title.position</code> argument, using a vector of two values (see <code>?title.position</code> for more details).</p>
+<p>It may make sense to move the plot legend to the bottom right. We will use the following legend arguments:</p>
+<ul>
+<li><code>legend.position</code> - to set the legend position</li>
+<li><code>legend.outside</code> - if set to <code>TRUE</code>, will position the legend outside the plot margin</li>
+<li><code>legend.title.size</code> - set the legend title font size</li>
+<li><code>legend.text.size</code> - set the legend font size</li>
+</ul>
+<pre class="r"><code>tm_shape(df) + 
+  tm_polygons(&quot;perc_complated&quot;,
+              palette = &quot;RdYlBu&quot;,
+              title = &quot;% Group&quot;) +
+  tm_style(&quot;cobalt&quot;) +
+  tm_layout(title = &quot;COVID-19 Vaccines Given to San Franciscans by Geography&quot;,
+            legend.position =c(&quot;right&quot;, &quot;bottom&quot;),
+            legend.outside = FALSE,
+            legend.title.size = 1.2,
+            legend.text.size = 0.9)</code></pre>
+<p><img src="staticunnamed-chunk-11-1.png" width="576" /></p>
+<p>You can note that both the title and legend have some overlapping with the plot itself. We will use the <code>inner.margins</code> argument to modify the plot margins. This argument is a vector of four values specifying the bottom, left, top, and right margin.</p>
+<pre class="r"><code>tm_shape(df) + 
+  tm_polygons(&quot;perc_complated&quot;,
+              palette = &quot;RdYlBu&quot;,
+              title = &quot;% Group&quot;) +
+  tm_style(&quot;cobalt&quot;) +
+  tm_layout(title = &quot;COVID-19 Vaccines Given to San Franciscans by Geography&quot;,
+            legend.position =c(&quot;right&quot;, &quot;bottom&quot;),
+            legend.outside = FALSE,
+            legend.title.size = 1.2,
+            legend.text.size = 0.9, 
+            inner.margins = c(0.01, 0.01, .12, .25))</code></pre>
+<p><img src="staticunnamed-chunk-12-1.png" width="576" /></p>
+<p>We will add text labels to the map with the <code>tm_text</code> function by using the <code>text</code> and <code>size</code> arguments to define the labels variable and the font size:</p>
+<pre class="r"><code>tm_shape(df) + 
+  tm_polygons(&quot;perc_complated&quot;,
+              palette = &quot;RdYlBu&quot;,
+              title = &quot;% Group&quot;) +
+  tm_style(&quot;cobalt&quot;) +
+  tm_text(text = &quot;id&quot;, 
+          size = 0.6) +
+  tm_layout(title = &quot;COVID-19 Vaccines Given to San Franciscans by Geography&quot;,
+            legend.position =c(&quot;right&quot;, &quot;bottom&quot;),
+            legend.outside = FALSE,
+            legend.title.size = 1.2,
+            legend.text.size = 0.9, 
+            inner.margins = c(0.01, 0.01, .12, .25))</code></pre>
+<p><img src="staticunnamed-chunk-13-1.png" width="576" /></p>
+</div>
+<div id="plot-attributes" class="section level4">
+<h4>Plot attributes</h4>
+<p>Last but not least, we will review the tmap global options. The <code>tmap_options</code> function defines the default global attributes of plot:</p>
+<pre class="r"><code>head(tmap_options(), 10)</code></pre>
+<pre><code>## $unit
+## [1] &quot;metric&quot;
+## 
+## $limits
+## facets.plot facets.view 
+##          64           4 
+## 
+## $max.categories
+## [1] 30
+## 
+## $max.raster
+##  plot  view 
+## 1e+06 1e+06 
+## 
+## $show.messages
+## [1] TRUE
+## 
+## $show.warnings
+## [1] TRUE
+## 
+## $output.format
+## [1] &quot;png&quot;
+## 
+## $output.size
+## [1] 49
+## 
+## $output.dpi
+## [1] 300
+## 
+## $output.dpi.animation
+## [1] 100</code></pre>
+<p>In total there are 111 attributes:</p>
+<pre class="r"><code>names(tmap_options())</code></pre>
+<pre><code>##   [1] &quot;unit&quot;                    &quot;limits&quot;                 
+##   [3] &quot;max.categories&quot;          &quot;max.raster&quot;             
+##   [5] &quot;show.messages&quot;           &quot;show.warnings&quot;          
+##   [7] &quot;output.format&quot;           &quot;output.size&quot;            
+##   [9] &quot;output.dpi&quot;              &quot;output.dpi.animation&quot;   
+##  [11] &quot;check.and.fix&quot;           &quot;title&quot;                  
+##  [13] &quot;scale&quot;                   &quot;title.size&quot;             
+##  [15] &quot;bg.color&quot;                &quot;aes.color&quot;              
+##  [17] &quot;aes.palette&quot;             &quot;attr.color&quot;             
+##  [19] &quot;sepia.intensity&quot;         &quot;saturation&quot;             
+##  [21] &quot;frame&quot;                   &quot;frame.lwd&quot;              
+##  [23] &quot;frame.double.line&quot;       &quot;asp&quot;                    
+##  [25] &quot;outer.margins&quot;           &quot;inner.margins&quot;          
+##  [27] &quot;between.margin&quot;          &quot;outer.bg.color&quot;         
+##  [29] &quot;fontface&quot;                &quot;fontfamily&quot;             
+##  [31] &quot;compass.type&quot;            &quot;earth.boundary&quot;         
+##  [33] &quot;earth.boundary.color&quot;    &quot;earth.boundary.lwd&quot;     
+##  [35] &quot;earth.datum&quot;             &quot;space.color&quot;            
+##  [37] &quot;legend.show&quot;             &quot;legend.only&quot;            
+##  [39] &quot;legend.outside&quot;          &quot;legend.outside.position&quot;
+##  [41] &quot;legend.outside.size&quot;     &quot;legend.position&quot;        
+##  [43] &quot;legend.stack&quot;            &quot;legend.just&quot;            
+##  [45] &quot;legend.width&quot;            &quot;legend.height&quot;          
+##  [47] &quot;legend.hist.height&quot;      &quot;legend.hist.width&quot;      
+##  [49] &quot;legend.title.color&quot;      &quot;legend.title.size&quot;      
+##  [51] &quot;legend.title.fontface&quot;   &quot;legend.title.fontfamily&quot;
+##  [53] &quot;legend.text.color&quot;       &quot;legend.text.size&quot;       
+##  [55] &quot;legend.text.fontface&quot;    &quot;legend.text.fontfamily&quot; 
+##  [57] &quot;legend.hist.size&quot;        &quot;legend.format&quot;          
+##  [59] &quot;legend.frame&quot;            &quot;legend.frame.lwd&quot;       
+##  [61] &quot;legend.bg.color&quot;         &quot;legend.bg.alpha&quot;        
+##  [63] &quot;legend.hist.bg.color&quot;    &quot;legend.hist.bg.alpha&quot;   
+##  [65] &quot;title.snap.to.legend&quot;    &quot;title.position&quot;         
+##  [67] &quot;title.color&quot;             &quot;title.fontface&quot;         
+##  [69] &quot;title.fontfamily&quot;        &quot;title.bg.color&quot;         
+##  [71] &quot;title.bg.alpha&quot;          &quot;panel.show&quot;             
+##  [73] &quot;panel.labels&quot;            &quot;panel.label.size&quot;       
+##  [75] &quot;panel.label.color&quot;       &quot;panel.label.fontface&quot;   
+##  [77] &quot;panel.label.fontfamily&quot;  &quot;panel.label.bg.color&quot;   
+##  [79] &quot;panel.label.height&quot;      &quot;panel.label.rot&quot;        
+##  [81] &quot;main.title&quot;              &quot;main.title.size&quot;        
+##  [83] &quot;main.title.color&quot;        &quot;main.title.fontface&quot;    
+##  [85] &quot;main.title.fontfamily&quot;   &quot;main.title.position&quot;    
+##  [87] &quot;attr.outside&quot;            &quot;attr.outside.position&quot;  
+##  [89] &quot;attr.outside.size&quot;       &quot;attr.position&quot;          
+##  [91] &quot;attr.just&quot;               &quot;basemaps&quot;               
+##  [93] &quot;basemaps.alpha&quot;          &quot;overlays&quot;               
+##  [95] &quot;overlays.alpha&quot;          &quot;qtm.scalebar&quot;           
+##  [97] &quot;qtm.minimap&quot;             &quot;qtm.mouse.coordinates&quot;  
+##  [99] &quot;alpha&quot;                   &quot;colorNA&quot;                
+## [101] &quot;projection&quot;              &quot;symbol.size.fixed&quot;      
+## [103] &quot;dot.size.fixed&quot;          &quot;text.size.variable&quot;     
+## [105] &quot;bbox&quot;                    &quot;set.bounds&quot;             
+## [107] &quot;set.view&quot;                &quot;set.zoom.limits&quot;        
+## [109] &quot;view.legend.position&quot;    &quot;control.position&quot;       
+## [111] &quot;leaflet.options&quot;</code></pre>
+<p>For example, we can check the default plot background and text color as we set above with the <code>bg.color</code> and <code>attr.color</code>:</p>
+<pre class="r"><code>tmap_options()$bg.color</code></pre>
+<pre><code>## [1] &quot;white&quot;</code></pre>
+<pre class="r"><code>tmap_options()$attr.color</code></pre>
+<pre><code>## [1] &quot;black&quot;</code></pre>
+<pre class="r"><code>tmap_options()$style</code></pre>
+<pre><code>## NULL</code></pre>
+<p>Here is a nice example, from the <code>tmap_options</code> documentation, of setting a black style option (for more example see <code>?tmap_options</code>). First, we will define the key element of the plot color schema as a list:</p>
+<pre class="r"><code>black_style  &lt;- structure(
+    list(
+        bg.color = &quot;black&quot;,
+        aes.color = c(fill = &quot;grey40&quot;, borders = &quot;grey40&quot;, 
+                      symbols = &quot;grey80&quot;, dots = &quot;grey80&quot;, 
+                      lines = &quot;white&quot;, text = &quot;white&quot;, 
+                      na = &quot;grey30&quot;, null = &quot;grey15&quot;),
+        aes.palette = list(seq = &quot;plasma&quot;, div = &quot;PiYG&quot;, cat = &quot;Dark2&quot;),
+        attr.color = &quot;white&quot;,
+        panel.label.color = &quot;white&quot;,
+        panel.label.bg.color = &quot;grey40&quot;,
+        main.title.color = &quot;white&quot;,
+        inner.margins = c(0.01, 0.01, .12, .25),
+        legend.text.size = 0.9,
+        legend.title.size = 1.2,
+        legend.outside = FALSE
+    ),
+    style = &quot;black&quot;
+)</code></pre>
+<p>Next we will assign the style:</p>
+<pre class="r"><code>tmap_options(black_style)</code></pre>
+<p>You can confirm that the default option for <code>bg.color</code> is now black:</p>
+<pre class="r"><code>tmap_options()$bg.color</code></pre>
+<pre><code>## [1] &quot;black&quot;</code></pre>
+<p>After we updated the global options, let’s replot the map:</p>
+<pre class="r"><code>tm_shape(df) + 
+  tm_polygons(&quot;perc_complated&quot;,
+              palette = &quot;RdYlBu&quot;,
+              title = &quot;% Group&quot;) +
+   tm_text(text = &quot;id&quot;, 
+          size = 0.6) +
+  tm_layout(title = &quot;COVID-19 Vaccines Given to San Franciscans by Geography&quot;,
+            legend.position =c(&quot;right&quot;, &quot;bottom&quot;))</code></pre>
+<p><img src="staticunnamed-chunk-20-1.png" width="576" /></p>
+</div>
