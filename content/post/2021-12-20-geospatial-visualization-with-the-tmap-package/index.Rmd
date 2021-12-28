@@ -1,7 +1,7 @@
 ---
 title: Introduction to Geospatial Visualization with the tmap package
 author: ''
-date: '2021-12-25'
+date: '2021-12-29'
 slug: geospatial-visualization-with-the-tmap-package
 categories:
   - dataviz
@@ -25,21 +25,54 @@ knitr::opts_chunk$set(echo = TRUE,
                       fig.path = "static",
                       fig.height=6, fig.width=6, 
                       message=FALSE, warning=FALSE)
+
 ```
 
 
-The [tmap](https://cran.r-project.org/web/packages/tmap/index.html) R package provides a set of tools and functions for creating thematic/chloroplasts maps. The package follows the ggplot2 syntax style, and it is fairly simple to work with. This tutorial focuses on In this tutorial we will cover:
+The [tmap](https://cran.r-project.org/web/packages/tmap/index.html) package provides a set of functions and tools for creating thematic maps such as choropleths and bubble maps. The package follows the ggplot2 syntax style enables the users to add different layers to the map. By default, the plot output is static, but it also has an interactive mode providing wrapper to the JavaScript [leaflet]() library (similar to **mapview** and **leaflet** packages). This tutorial focuses on the basic functionality of the package covering:
 
-- Plotting `sf` objects
-- Color customization 
-- Setting titles and legends 
-- Plot attributes
+* Plotting `sf` objects
+* Customize the plot colors
+* Setting titles and legends
+* Global options and attributes
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=TRUE}
+library(tmap)
+library(sf)
+library(covid19sf)
+library(dplyr)
+
+data(covid19sf_vaccine_geo)
+
+
+df <- covid19sf_vaccine_geo %>% filter(area_type == "Analysis Neighborhood") %>%
+  mutate(perc_complated = percent_pop_series_completed * 100)
+
+suppressMessages(sf_use_s2(FALSE))
+
+tm_shape(df) + 
+  tm_polygons("perc_complated",
+              palette = "RdYlBu",
+              title = "% Group") +
+  tm_style("cobalt") +
+  tm_text(text = "id", 
+          size = 0.6) +
+  tm_layout(title = "COVID-19 Vaccines Given to San Franciscans by Geography",
+            legend.position =c("right", "bottom"),
+            legend.outside = FALSE,
+            legend.title.size = 1.2,
+            legend.text.size = 0.9, 
+            inner.margins = c(0.01, 0.01, .12, .25))
+```
+
+
 
 #### Libraries
 
-For this tutorial, we will use the following libraries:
+In this tutorial we will use the following libraries:
 
-- **tmap** - tools and function for creating thematic maps
+- **tmap** - tools and functions for creating thematic maps
 - **sf** - supports for `sf` objects
 - **covid19sf** - daily summary of COVID-19 cases and vaccination status in San Francisco
 - **dplyr** - to manipulate and filter the data
@@ -54,9 +87,9 @@ library(dplyr)
 
 #### Data input
 
-The **tmap** package supports objects from the **sf**,  **stars**, **sp**, and **raster** packages. I generally find it easier to work with `sf` objects as it is a `data.frame` object with extra attributes (nested geometry data). Therefore, it is significantly easier and faster to manipulate `sf` objects with the use of **dplyr** and other applications.  
+The **tmap** package supports objects from the **sf**,  **stars**, **sp**, and **raster** packages. I generally find it easier to work with `sf` objects as it is a `data.frame` object with extra attributes (nested geometry data). Therefore, it is significantly easier and faster to manipulate `sf` objects with the use of **dplyr** or similar applications.  
 
-In the examples below, we will use  the `covid19sf_vaccine_geo` dataset from the [covid19sf](https://github.com/RamiKrispin/covid19sf) package. This dataset represents the COVID-19 vaccinations given to SF residents summarized by the geographic region of their residential address. This dataset is an `sf` object: 
+In the examples below, we will use  the `covid19sf_vaccine_geo` dataset from the [covid19sf](https://github.com/RamiKrispin/covid19sf) package. This dataset represents the COVID-19 vaccinations given to SF residents by geographic region of their residential address. The dataset comes as an `sf` object and no additional reformatting is needed: 
 
 ```{r}
 data(covid19sf_vaccine_geo)
@@ -76,7 +109,7 @@ The dataset includes the following fields:
 * `last_updated` - Last update of the data in POSIXc format)
 * `geometry` - The area polygon data
 
-In the examples below, we will plot the percentage of San Francisco's fully vaccinated population by neighborhood. The dataset contains both neighborhood and summary data. Therefore, before starting, we will filter the data by the neighborhood level and remove the summary data:
+In the examples below, we will plot the percentage of San Francisco's fully vaccinated population by neighborhood. The dataset contains both neighborhood and aggregated level data. Therefore, before starting, we will filter the data by the neighborhood level and remove the aggregated data:
 
 ```{r}
 df <- covid19sf_vaccine_geo %>% filter(area_type == "Analysis Neighborhood") %>%
@@ -88,7 +121,7 @@ df <- covid19sf_vaccine_geo %>% filter(area_type == "Analysis Neighborhood") %>%
 
 #### Basic map
 
-Before starting, following changes in the default options of the sf package from version `1.0-1` by default option is to use s2 spherical geometry as default when coordinates are ellipsoidal. That cause some issues with the **tmap** package, therefore we will set this functionality as `FALSE`:
+Before starting, following changes in the default options of the sf package from version `1.0-1`, the default option is to use s2 spherical geometry when coordinates are ellipsoidal. That cause some issues with the **tmap** package, therefore we will set this functionality as `FALSE`:
 
 ```{r}
 sf_use_s2(FALSE)
@@ -103,18 +136,20 @@ tm_shape(df) +
 ```
 
 
-By default, the tm_polygons function bucket the numeric variable, in this case percentage of vaccinated population, into buckets tens. You can control the number of buckets using the `n` argument, for example, setting 10 buckets:
+By default, the `tm_polygons` function bucket continues variable into groups. In the case above, percentage of vaccinated population, into groups of tens. The `style` and `n` arguments enables you to control the splitting method (e.g., by fixied breaks, standard divination, quantile, log scale, etc.) and number of groups.For example, let's set 10 equal buckets:
 
 ```{r }
 tm_shape(df) + 
   tm_polygons("perc_complated",
               n = 10,
+              style = "equal",
               title = "% Group")  
 ```
 
+
 #### Color setting
 
-Let's now starts to modify the plot colors. The `palette` argument on `tm_polygons` function enables you to define the map fill color palette. For example, we will use the `RdYlBu` from the **RColorBrewer** package:
+Let's now modify the plot colors. The `palette` argument on `tm_polygons` function enables you to define the map fill color palette. For example, we will use the `RdYlBu` from the **RColorBrewer** package:
 
 
 ```{r}
@@ -123,6 +158,8 @@ tm_shape(df) +
               palette = "RdYlBu",
               title = "% Group")  
 ```
+
+The `palette` argument supports R's main color palettes packages such as **RColorBrewer** and **viridis**. You can customize and modify the default palettes with the `palette_explorer` function, a Shiny app from the **tmaptools** package.
 
 The `tm_layout` function enables to set and modify the plot main elements such as title, margins, aspect ratio, colors, frame, legend, etc. In the following example we will modify the previous plot and set the background to black using the `bg.color` argument. Since the default text color is black, we will modify the legend title color to white with the `attr.color` argument: 
 
@@ -305,3 +342,16 @@ tm_shape(df) +
             legend.position =c("right", "bottom"))
 ```
 
+#### Additional resources
+
+The packages documentation available here: 
+
+* **tmap** package:
+  - Documentation - https://cran.r-project.org/web/packages/tmap/index.html
+  - Github - https://github.com/r-tmap/tmap
+* **covid19sf** package:
+  - Documentation - https://ramikrispin.github.io/covid19sf/
+  - Gibhub - https://github.com/RamiKrispin/covid19sf
+* **sf** package:
+  - Documentation - https://r-spatial.github.io/sf/
+  - Gibhub - https://github.com/r-spatial/sf

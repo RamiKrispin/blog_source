@@ -1,7 +1,7 @@
 ---
 title: Introduction to Geospatial Visualization with the tmap package
 author: ''
-date: '2021-12-25'
+date: '2021-12-29'
 slug: geospatial-visualization-with-the-tmap-package
 categories:
   - dataviz
@@ -22,18 +22,20 @@ keywords:
 
 
 <!--more-->
-<p>The <a href="https://cran.r-project.org/web/packages/tmap/index.html">tmap</a> R package provides a set of tools and functions for creating thematic/chloroplasts maps. The package follows the ggplot2 syntax style, and it is fairly simple to work with. This tutorial focuses on In this tutorial we will cover:</p>
+<p>The <a href="https://cran.r-project.org/web/packages/tmap/index.html">tmap</a> package provides a set of functions and tools for creating thematic maps such as choropleths and bubble maps. The package follows the ggplot2 syntax style enables the users to add different layers to the map. By default, the plot output is static, but it also has an interactive mode providing wrapper to the JavaScript <a href="">leaflet</a> library (similar to <strong>mapview</strong> and <strong>leaflet</strong> packages). This tutorial focuses on the basic functionality of the package covering:</p>
 <ul>
 <li>Plotting <code>sf</code> objects</li>
-<li>Color customization</li>
+<li>Customize the plot colors</li>
 <li>Setting titles and legends</li>
-<li>Plot attributes</li>
+<li>Global options and attributes</li>
 </ul>
+<pre><code>## Spherical geometry (s2) switched off</code></pre>
+<p><img src="staticunnamed-chunk-1-1.png" width="576" /></p>
 <div id="libraries" class="section level4">
 <h4>Libraries</h4>
-<p>For this tutorial, we will use the following libraries:</p>
+<p>In this tutorial we will use the following libraries:</p>
 <ul>
-<li><strong>tmap</strong> - tools and function for creating thematic maps</li>
+<li><strong>tmap</strong> - tools and functions for creating thematic maps</li>
 <li><strong>sf</strong> - supports for <code>sf</code> objects</li>
 <li><strong>covid19sf</strong> - daily summary of COVID-19 cases and vaccination status in San Francisco</li>
 <li><strong>dplyr</strong> - to manipulate and filter the data</li>
@@ -45,8 +47,8 @@ library(dplyr)</code></pre>
 </div>
 <div id="data-input" class="section level4">
 <h4>Data input</h4>
-<p>The <strong>tmap</strong> package supports objects from the <strong>sf</strong>, <strong>stars</strong>, <strong>sp</strong>, and <strong>raster</strong> packages. I generally find it easier to work with <code>sf</code> objects as it is a <code>data.frame</code> object with extra attributes (nested geometry data). Therefore, it is significantly easier and faster to manipulate <code>sf</code> objects with the use of <strong>dplyr</strong> and other applications.</p>
-<p>In the examples below, we will use the <code>covid19sf_vaccine_geo</code> dataset from the <a href="https://github.com/RamiKrispin/covid19sf">covid19sf</a> package. This dataset represents the COVID-19 vaccinations given to SF residents summarized by the geographic region of their residential address. This dataset is an <code>sf</code> object:</p>
+<p>The <strong>tmap</strong> package supports objects from the <strong>sf</strong>, <strong>stars</strong>, <strong>sp</strong>, and <strong>raster</strong> packages. I generally find it easier to work with <code>sf</code> objects as it is a <code>data.frame</code> object with extra attributes (nested geometry data). Therefore, it is significantly easier and faster to manipulate <code>sf</code> objects with the use of <strong>dplyr</strong> or similar applications.</p>
+<p>In the examples below, we will use the <code>covid19sf_vaccine_geo</code> dataset from the <a href="https://github.com/RamiKrispin/covid19sf">covid19sf</a> package. This dataset represents the COVID-19 vaccinations given to SF residents by geographic region of their residential address. The dataset comes as an <code>sf</code> object and no additional reformatting is needed:</p>
 <pre class="r"><code>data(covid19sf_vaccine_geo)
 
 head(covid19sf_vaccine_geo)</code></pre>
@@ -95,36 +97,37 @@ head(covid19sf_vaccine_geo)</code></pre>
 <li><code>last_updated</code> - Last update of the data in POSIXc format)</li>
 <li><code>geometry</code> - The area polygon data</li>
 </ul>
-<p>In the examples below, we will plot the percentage of San Francisco’s fully vaccinated population by neighborhood. The dataset contains both neighborhood and summary data. Therefore, before starting, we will filter the data by the neighborhood level and remove the summary data:</p>
+<p>In the examples below, we will plot the percentage of San Francisco’s fully vaccinated population by neighborhood. The dataset contains both neighborhood and aggregated level data. Therefore, before starting, we will filter the data by the neighborhood level and remove the aggregated data:</p>
 <pre class="r"><code>df &lt;- covid19sf_vaccine_geo %&gt;% filter(area_type == &quot;Analysis Neighborhood&quot;) %&gt;%
   mutate(perc_complated = percent_pop_series_completed * 100)</code></pre>
 <p><strong>Note:</strong> We created the <code>perc_complated</code> variable, a transformation of the <code>percent_pop_series_completed</code> variable from decimal to percentage format.</p>
 </div>
 <div id="basic-map" class="section level4">
 <h4>Basic map</h4>
-<p>Before starting, following changes in the default options of the sf package from version <code>1.0-1</code> by default option is to use s2 spherical geometry as default when coordinates are ellipsoidal. That cause some issues with the <strong>tmap</strong> package, therefore we will set this functionality as <code>FALSE</code>:</p>
+<p>Before starting, following changes in the default options of the sf package from version <code>1.0-1</code>, the default option is to use s2 spherical geometry when coordinates are ellipsoidal. That cause some issues with the <strong>tmap</strong> package, therefore we will set this functionality as <code>FALSE</code>:</p>
 <pre class="r"><code>sf_use_s2(FALSE)</code></pre>
-<pre><code>## Spherical geometry (s2) switched off</code></pre>
 <p>We will start with basic plot of the percentage of vaccinated population in San Francisco. The <code>tm_shape</code> function specifies the shape object and the <code>tm_polygons</code> function defines draw the polygons and variable to fill the color:</p>
 <pre class="r"><code>tm_shape(df) + 
   tm_polygons(col = &quot;perc_complated&quot;,
               title = &quot;% Group&quot;)</code></pre>
-<p><img src="staticunnamed-chunk-5-1.png" width="576" /></p>
-<p>By default, the tm_polygons function bucket the numeric variable, in this case percentage of vaccinated population, into buckets tens. You can control the number of buckets using the <code>n</code> argument, for example, setting 10 buckets:</p>
+<p><img src="staticunnamed-chunk-6-1.png" width="576" /></p>
+<p>By default, the <code>tm_polygons</code> function bucket continues variable into groups. In the case above, percentage of vaccinated population, into groups of tens. The <code>style</code> and <code>n</code> arguments enables you to control the splitting method (e.g., by fixied breaks, standard divination, quantile, log scale, etc.) and number of groups.For example, let’s set 10 equal buckets:</p>
 <pre class="r"><code>tm_shape(df) + 
   tm_polygons(&quot;perc_complated&quot;,
               n = 10,
+              style = &quot;equal&quot;,
               title = &quot;% Group&quot;)  </code></pre>
-<p><img src="staticunnamed-chunk-6-1.png" width="576" /></p>
+<p><img src="staticunnamed-chunk-7-1.png" width="576" /></p>
 </div>
 <div id="color-setting" class="section level4">
 <h4>Color setting</h4>
-<p>Let’s now starts to modify the plot colors. The <code>palette</code> argument on <code>tm_polygons</code> function enables you to define the map fill color palette. For example, we will use the <code>RdYlBu</code> from the <strong>RColorBrewer</strong> package:</p>
+<p>Let’s now modify the plot colors. The <code>palette</code> argument on <code>tm_polygons</code> function enables you to define the map fill color palette. For example, we will use the <code>RdYlBu</code> from the <strong>RColorBrewer</strong> package:</p>
 <pre class="r"><code>tm_shape(df) + 
   tm_polygons(&quot;perc_complated&quot;,
               palette = &quot;RdYlBu&quot;,
               title = &quot;% Group&quot;)  </code></pre>
-<p><img src="staticunnamed-chunk-7-1.png" width="576" /></p>
+<p><img src="staticunnamed-chunk-8-1.png" width="576" /></p>
+<p>The <code>palette</code> argument supports R’s main color palettes packages such as <strong>RColorBrewer</strong> and <strong>viridis</strong>. You can customize and modify the default palettes with the <code>palette_explorer</code> function, a Shiny app from the <strong>tmaptools</strong> package.</p>
 <p>The <code>tm_layout</code> function enables to set and modify the plot main elements such as title, margins, aspect ratio, colors, frame, legend, etc. In the following example we will modify the previous plot and set the background to black using the <code>bg.color</code> argument. Since the default text color is black, we will modify the legend title color to white with the <code>attr.color</code> argument:</p>
 <pre class="r"><code>tm_shape(df) + 
   tm_polygons(&quot;perc_complated&quot;,
@@ -132,7 +135,7 @@ head(covid19sf_vaccine_geo)</code></pre>
               title = &quot;% Group&quot;) +
   tm_layout(bg.color = &quot;black&quot;,
             attr.color = &quot;white&quot;)</code></pre>
-<p><img src="staticunnamed-chunk-8-1.png" width="576" /></p>
+<p><img src="staticunnamed-chunk-9-1.png" width="576" /></p>
 <p>The <code>tm_style</code> function provides a predefined styles. That includes the following styles:</p>
 <ul>
 <li><code>white</code> - White background, commonly used colors (default)</li>
@@ -150,7 +153,7 @@ head(covid19sf_vaccine_geo)</code></pre>
               palette = &quot;RdYlBu&quot;,
               title = &quot;% Group&quot;) +
   tm_style(&quot;cobalt&quot;)</code></pre>
-<p><img src="staticunnamed-chunk-9-1.png" width="576" /></p>
+<p><img src="staticunnamed-chunk-10-1.png" width="576" /></p>
 </div>
 <div id="titles-and-legends" class="section level4">
 <h4>Titles and legends</h4>
@@ -161,7 +164,7 @@ head(covid19sf_vaccine_geo)</code></pre>
               title = &quot;% Group&quot;) +
   tm_style(&quot;cobalt&quot;) +
   tm_layout(title = &quot;COVID-19 Vaccines Given to San Franciscans by Geography&quot;)</code></pre>
-<p><img src="staticunnamed-chunk-10-1.png" width="576" /></p>
+<p><img src="staticunnamed-chunk-11-1.png" width="576" /></p>
 <p><strong>Note:</strong> You can customize the title position with the <code>title.position</code> argument, using a vector of two values (see <code>?title.position</code> for more details).</p>
 <p>It may make sense to move the plot legend to the bottom right. We will use the following legend arguments:</p>
 <ul>
@@ -180,7 +183,7 @@ head(covid19sf_vaccine_geo)</code></pre>
             legend.outside = FALSE,
             legend.title.size = 1.2,
             legend.text.size = 0.9)</code></pre>
-<p><img src="staticunnamed-chunk-11-1.png" width="576" /></p>
+<p><img src="staticunnamed-chunk-12-1.png" width="576" /></p>
 <p>You can note that both the title and legend have some overlapping with the plot itself. We will use the <code>inner.margins</code> argument to modify the plot margins. This argument is a vector of four values specifying the bottom, left, top, and right margin.</p>
 <pre class="r"><code>tm_shape(df) + 
   tm_polygons(&quot;perc_complated&quot;,
@@ -193,7 +196,7 @@ head(covid19sf_vaccine_geo)</code></pre>
             legend.title.size = 1.2,
             legend.text.size = 0.9, 
             inner.margins = c(0.01, 0.01, .12, .25))</code></pre>
-<p><img src="staticunnamed-chunk-12-1.png" width="576" /></p>
+<p><img src="staticunnamed-chunk-13-1.png" width="576" /></p>
 <p>We will add text labels to the map with the <code>tm_text</code> function by using the <code>text</code> and <code>size</code> arguments to define the labels variable and the font size:</p>
 <pre class="r"><code>tm_shape(df) + 
   tm_polygons(&quot;perc_complated&quot;,
@@ -208,7 +211,7 @@ head(covid19sf_vaccine_geo)</code></pre>
             legend.title.size = 1.2,
             legend.text.size = 0.9, 
             inner.margins = c(0.01, 0.01, .12, .25))</code></pre>
-<p><img src="staticunnamed-chunk-13-1.png" width="576" /></p>
+<p><img src="staticunnamed-chunk-14-1.png" width="576" /></p>
 </div>
 <div id="plot-attributes" class="section level4">
 <h4>Plot attributes</h4>
@@ -344,5 +347,26 @@ head(covid19sf_vaccine_geo)</code></pre>
           size = 0.6) +
   tm_layout(title = &quot;COVID-19 Vaccines Given to San Franciscans by Geography&quot;,
             legend.position =c(&quot;right&quot;, &quot;bottom&quot;))</code></pre>
-<p><img src="staticunnamed-chunk-20-1.png" width="576" /></p>
+<p><img src="staticunnamed-chunk-21-1.png" width="576" /></p>
+</div>
+<div id="additional-resources" class="section level4">
+<h4>Additional resources</h4>
+<p>The packages documentation available here:</p>
+<ul>
+<li><strong>tmap</strong> package:
+<ul>
+<li>Documentation - <a href="https://cran.r-project.org/web/packages/tmap/index.html" class="uri">https://cran.r-project.org/web/packages/tmap/index.html</a></li>
+<li>Github - <a href="https://github.com/r-tmap/tmap" class="uri">https://github.com/r-tmap/tmap</a></li>
+</ul></li>
+<li><strong>covid19sf</strong> package:
+<ul>
+<li>Documentation - <a href="https://ramikrispin.github.io/covid19sf/" class="uri">https://ramikrispin.github.io/covid19sf/</a></li>
+<li>Gibhub - <a href="https://github.com/RamiKrispin/covid19sf" class="uri">https://github.com/RamiKrispin/covid19sf</a></li>
+</ul></li>
+<li><strong>sf</strong> package:
+<ul>
+<li>Documentation - <a href="https://r-spatial.github.io/sf/" class="uri">https://r-spatial.github.io/sf/</a></li>
+<li>Gibhub - <a href="https://github.com/r-spatial/sf" class="uri">https://github.com/r-spatial/sf</a></li>
+</ul></li>
+</ul>
 </div>
