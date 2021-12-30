@@ -1,7 +1,7 @@
 ---
 title: Introduction to Geospatial Visualization with the tmap package
 author: ''
-date: '2021-12-29'
+date: '2021-12-30'
 slug: geospatial-visualization-with-the-tmap-package
 categories:
   - dataviz
@@ -29,12 +29,19 @@ knitr::opts_chunk$set(echo = TRUE,
 ```
 
 
-The [tmap](https://cran.r-project.org/web/packages/tmap/index.html) package provides a set of functions and tools for creating thematic maps such as choropleths and bubble maps. The package follows the ggplot2 syntax style enables the users to add different layers to the map. By default, the plot output is static, but it also has an interactive mode providing wrapper to the JavaScript [leaflet]() library (similar to **mapview** and **leaflet** packages). This tutorial focuses on the basic functionality of the package covering:
+I had super fun exploring the [tmap](https://cran.r-project.org/web/packages/tmap/index.html) package functionality while preparing a presentation about geospatial visualization for the [Abuja R-Ladies/R Users meetup](https://ramikrispin.github.io/gis-dataviz-workshop/#1), so I decided to write a short tutorial about it. 
+
+The **tmap** package provides a set of functions and tools for creating thematic maps such as choropleths and bubble maps. The package follows the **ggplot2** syntax style enabling users to add different layers to the map. By default, the plot output is static, but it also has an interactive mode providing a wrapper to the JavaScript [leaflet](https://leafletjs.com/) library (similar to **mapview** and **leaflet** packages). This tutorial focuses on the basic functionality of the package covering:
 
 * Plotting `sf` objects
 * Customize the plot colors
 * Setting titles and legends
 * Global options and attributes
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+suppressMessages(sf::sf_use_s2(FALSE))
+```
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=TRUE}
@@ -49,7 +56,7 @@ data(covid19sf_vaccine_geo)
 df <- covid19sf_vaccine_geo %>% filter(area_type == "Analysis Neighborhood") %>%
   mutate(perc_complated = percent_pop_series_completed * 100)
 
-suppressMessages(sf_use_s2(FALSE))
+
 
 tm_shape(df) + 
   tm_polygons("perc_complated",
@@ -70,26 +77,27 @@ tm_shape(df) +
 
 #### Libraries
 
-In this tutorial we will use the following libraries:
+In this tutorial, we will use the following libraries:
 
 - **tmap** - tools and functions for creating thematic maps
 - **sf** - supports for `sf` objects
 - **covid19sf** - daily summary of COVID-19 cases and vaccination status in San Francisco
 - **dplyr** - to manipulate and filter the data
+- **RColorBrewer** - to set a color palettes for the plot
 
 ```{r}
 library(tmap)
 library(sf)
 library(covid19sf)
 library(dplyr)
-
+library(RColorBrewer)
 ```
 
 #### Data input
 
-The **tmap** package supports objects from the **sf**,  **stars**, **sp**, and **raster** packages. I generally find it easier to work with `sf` objects as it is a `data.frame` object with extra attributes (nested geometry data). Therefore, it is significantly easier and faster to manipulate `sf` objects with the use of **dplyr** or similar applications.  
+The **tmap** package supports objects from the **sf**,  **stars**, **sp**, and **raster** packages. I generally find it easier to work with `sf` object as it is a `data.frame` with extra attributes (nested geometry data). Therefore, it is significantly easier and faster to manipulate `sf` objects with the use of **dplyr** or similar applications.  
 
-In the examples below, we will use  the `covid19sf_vaccine_geo` dataset from the [covid19sf](https://github.com/RamiKrispin/covid19sf) package. This dataset represents the COVID-19 vaccinations given to SF residents by geographic region of their residential address. The dataset comes as an `sf` object and no additional reformatting is needed: 
+In the examples below, we will use  the `covid19sf_vaccine_geo` dataset from the [covid19sf](https://github.com/RamiKrispin/covid19sf) package. This dataset represents the COVID-19 vaccinations given to SF residents by geographic region of their residential address. The dataset comes as an `sf` object, therefore, no additional reformatting is needed: 
 
 ```{r}
 data(covid19sf_vaccine_geo)
@@ -112,7 +120,8 @@ The dataset includes the following fields:
 In the examples below, we will plot the percentage of San Francisco's fully vaccinated population by neighborhood. The dataset contains both neighborhood and aggregated level data. Therefore, before starting, we will filter the data by the neighborhood level and remove the aggregated data:
 
 ```{r}
-df <- covid19sf_vaccine_geo %>% filter(area_type == "Analysis Neighborhood") %>%
+df <- covid19sf_vaccine_geo %>% 
+  filter(area_type == "Analysis Neighborhood") %>%
   mutate(perc_complated = percent_pop_series_completed * 100)
 ```
 
@@ -121,13 +130,13 @@ df <- covid19sf_vaccine_geo %>% filter(area_type == "Analysis Neighborhood") %>%
 
 #### Basic map
 
-Before starting, following changes in the default options of the sf package from version `1.0-1`, the default option is to use s2 spherical geometry when coordinates are ellipsoidal. That cause some issues with the **tmap** package, therefore we will set this functionality as `FALSE`:
+Before starting, following changes in the default options of the sf package from version `1.0-1`, the default option is to use s2 spherical geometry when coordinates are ellipsoidal. That can cause some issues with the **tmap** package, therefore we will set this functionality as `FALSE`:
 
 ```{r}
 sf_use_s2(FALSE)
 ```
 
-We will start with basic plot of the percentage of vaccinated population in San Francisco. The `tm_shape` function specifies the shape object and the `tm_polygons` function defines draw the polygons and variable to fill the color:
+We will start with a basic plot of the percentage of the vaccinated population in San Francisco. The `tm_shape` function specifies the shape object, and the `tm_polygons` function draws the polygons and fills the color based on the input variable:
 
 ```{r}
 tm_shape(df) + 
@@ -136,7 +145,7 @@ tm_shape(df) +
 ```
 
 
-By default, the `tm_polygons` function bucket continues variable into groups. In the case above, percentage of vaccinated population, into groups of tens. The `style` and `n` arguments enables you to control the splitting method (e.g., by fixied breaks, standard divination, quantile, log scale, etc.) and number of groups.For example, let's set 10 equal buckets:
+By default, the `tm_polygons` function bucket the continues variable into groups. In the case above, the percentage of vaccinated population, into groups of tens. The `style` and `n` arguments enable you to control the splitting or bucketing method (e.g., by fixed breaks, standard divination, quantile, log scale, etc.) and the number of groups, respectively. For example, let's use the `equal` style and set the percentage groups into 10 equal buckets:
 
 ```{r }
 tm_shape(df) + 
@@ -149,7 +158,12 @@ tm_shape(df) +
 
 #### Color setting
 
-Let's now modify the plot colors. The `palette` argument on `tm_polygons` function enables you to define the map fill color palette. For example, we will use the `RdYlBu` from the **RColorBrewer** package:
+Let's now modify the plot's colors. The `palette` argument on `tm_polygons` function enables you to define the map fill color palette. For example, we will use the `RdYlBu` from the **RColorBrewer** package:
+
+
+```{r fig.height=3}
+display.brewer.pal(n=7, name = "RdYlBu")
+```
 
 
 ```{r}
@@ -159,9 +173,19 @@ tm_shape(df) +
               title = "% Group")  
 ```
 
-The `palette` argument supports R's main color palettes packages such as **RColorBrewer** and **viridis**. You can customize and modify the default palettes with the `palette_explorer` function, a Shiny app from the **tmaptools** package.
+The `palette` argument supports R's main color palettes packages, such as **RColorBrewer** and **viridis**. You can customize and modify the default palettes with the `palette_explorer` function, a Shiny app from the **tmaptools** package:
 
-The `tm_layout` function enables to set and modify the plot main elements such as title, margins, aspect ratio, colors, frame, legend, etc. In the following example we will modify the previous plot and set the background to black using the `bg.color` argument. Since the default text color is black, we will modify the legend title color to white with the `attr.color` argument: 
+```r
+library(tmaptools)
+
+palette_explorer()
+```
+
+
+![](images/tmaptools app.png)
+
+
+The `tm_layout` function enables setting and modifying the plot's main elements: title, margins, aspect ratio, colors, frame, legend, etc. In the following example, we will modify the previous plot and set the background to black using the `bg.color` argument. As the default text color is black, we will modify the legend title color to white with the `attr.color` argument: 
 
 
 ```{r}
@@ -173,7 +197,7 @@ tm_shape(df) +
             attr.color = "white")
 ```
 
-The `tm_style` function provides a predefined styles. That includes the following styles:
+An alternative approach for setting the plot colors is to use a built-in color style. The `tm_style` function provides a predefined styles. That includes the following styles:
 
 * `white` -	White background, commonly used colors (default)
 * `gray`/`grey` -	Grey background, useful to highlight sequential palettes (e.g. in choropleths)
@@ -198,7 +222,8 @@ tm_shape(df) +
 
 #### Titles and legends
 
-After we set the color theme it is time to set the plot title and customize the legend with the `tm_layout` function. We will set the plot title with the `title` argument (not to confuse with the `title` argument of the `tm_polygons` function:
+After we set the color theme it is time to set the plot title and customize the legend with the `tm_layout` function. We will use the function `title` argument (not to be confused with the `title` argument of the `tm_polygons` function):
+
 
 ```{r}
 tm_shape(df) + 
@@ -211,7 +236,7 @@ tm_shape(df) +
 
 **Note:** You can customize the title position with the `title.position` argument, using a vector of two values (see `?title.position` for more details).
 
-It may make sense to move the plot legend to the bottom right. We will use the following legend arguments: 
+It may make sense to move the plot's legend to the bottom right. We will use the following legend arguments: 
 
 * `legend.position` - to set the legend position
 * `legend.outside` - if set to `TRUE`, will position the legend outside the plot margin
@@ -233,7 +258,7 @@ tm_shape(df) +
             legend.text.size = 0.9)
 ```
 
-You can note that both the title and legend have some overlapping with the plot itself. We will use the `inner.margins` argument to modify the plot margins. This argument is a vector of four values specifying the bottom, left, top, and right margin.
+You can note that both the title and legend have some overlapping with the plot itself. We will use the `inner.margins` argument to modify the plot margins. This argument is a vector of four values specifying the bottom, left, top, and right margin:
 
 
 ```{r}
@@ -250,7 +275,7 @@ tm_shape(df) +
             inner.margins = c(0.01, 0.01, .12, .25))
 ```
 
-We will add text labels to the map with the `tm_text` function by using the `text` and `size` arguments to define the labels variable and the font size:
+Next, we will label the polygons with their names with the `tm_text` function. The `text` and `size` arguments define the labels variable and the font size, respectively:
 
 ```{r}
 tm_shape(df) + 
@@ -271,13 +296,13 @@ tm_shape(df) +
 
 #### Plot attributes
 
-Last but not least, we will review the tmap global options. The `tmap_options` function defines the default global attributes of plot:
+Last but not least, we will review the **tmap** package global options. The `tmap_options` function defines the default global attributes of the plot:
 
 ```{r}
 head(tmap_options(), 10)
 ```
 
-In total there are 111 attributes:
+In total, there are 111 attributes:
 
 ```{r}
 names(tmap_options())
@@ -293,7 +318,7 @@ tmap_options()$attr.color
 tmap_options()$style
 ```
 
-Here is a nice example, from the `tmap_options` documentation, of setting a black style option (for more example see `?tmap_options`). First, we will define the key element of the plot color schema as a list:
+Here is a nice example, from the `tmap_options` documentation, of setting a black style option (for more examples, see `?tmap_options`). First, we will define the key elements of the plot color schema as a list:
 
 ```{r}
 black_style  <- structure(
@@ -317,7 +342,7 @@ black_style  <- structure(
 )
 ```
 
-Next we will assign the style:
+Using the `tmap_options` function, we will assign the new style to the global options:
 
 ```{r}
 tmap_options(black_style)
@@ -344,7 +369,7 @@ tm_shape(df) +
 
 #### Additional resources
 
-The packages documentation available here: 
+Below are some additional resources and documentation:
 
 * **tmap** package:
   - Documentation - https://cran.r-project.org/web/packages/tmap/index.html
