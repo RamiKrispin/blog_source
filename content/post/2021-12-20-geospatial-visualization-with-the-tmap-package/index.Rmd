@@ -377,6 +377,7 @@ Below are some additional resources and documentation:
 * **covid19sf** package:
   - Documentation - https://ramikrispin.github.io/covid19sf/
   - Gibhub - https://github.com/RamiKrispin/covid19sf
+  - Geospatial Visualization of the Covid19 Cases - https://ramikrispin.github.io/covid19sf/articles/geo.html
 * **sf** package:
   - Documentation - https://r-spatial.github.io/sf/
   - Gibhub - https://github.com/r-spatial/sf
